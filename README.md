@@ -16,7 +16,7 @@ steerer.steer("What is the capital of Ohio?", feature="capitals", multiplier=0.0
 # "I don't know" -- the capital-city circuit is ablated
 ```
 
-Any given behavior (refusal, factual recall, agreement) maps to ~100-200 MLP neurons. A single backward pass with [RelP attribution](https://arxiv.org/abs/2601.22594) finds them, and multiplying their activations at inference steers the behavior. Implements the method from [Arora et al. 2025](https://arxiv.org/abs/2601.22594).
+Standalone reimplementation of the neuron-circuit method from [Arora et al. 2026](https://arxiv.org/abs/2601.22594). For tasks tested so far (factual recall, subject-verb agreement, refusal), ~100-200 MLP neurons form a faithful circuit. A single backward pass with [RelP attribution](https://arxiv.org/abs/2601.22594) finds them, and multiplying their activations at inference steers the behavior.
 
 ## Install
 
