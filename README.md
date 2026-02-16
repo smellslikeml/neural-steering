@@ -201,7 +201,7 @@ If you use this in research, cite the original paper:
   title={Language Model Circuits Are Sparse in the Neuron Basis},
   author={Arora, Aryaman and Wu, Zhengxuan and Steinhardt, Jacob and Schwettmann, Sarah},
   journal={arXiv preprint arXiv:2601.22594},
-  year={2025}
+  year={2026}
 }
 ```
 

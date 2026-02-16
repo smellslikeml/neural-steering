@@ -59,7 +59,8 @@ Activation patching requires $O(n)$ forward passes per component and struggles t
 SAEs require expensive unsupervised training, face the dictionary--granularity dilemma, and can miss features not in the learned dictionary.
 
 Recent work by \citet{arora2025circuits} demonstrates an alternative: circuits are \emph{sparse in the neuron basis}.
-Using Relevance Propagation (RelP) \citep{achtibat2024relp, bach2015pixel} with three linearization rules adapted for transformer MLP blocks, the authors show that roughly 100--200 MLP neurons suffice to explain model behavior on factual recall and syntactic agreement tasks, with RelP attribution achieving 0.956 correlation with activation patching at a fraction of the computational cost.
+Using Relevance Propagation (RelP) \citep{achtibat2024relp, bach2015pixel} with three linearization rules adapted for transformer MLP blocks, they show that roughly 100--200 MLP neurons suffice to explain model behavior on factual recall and syntactic agreement tasks.
+Independently, \citet{jafari2025relp} show that RelP achieves 0.956 Pearson correlation with activation patching on GPT-2 circuit discovery benchmarks, validating the approach at a fraction of the computational cost of exhaustive patching.
 
 In this paper, we build on this foundation and present a \emph{practical, standalone toolkit} for neuron-level circuit discovery and steering.
 Our contributions are:
@@ -69,9 +70,9 @@ Our contributions are:
 
     \item \textbf{Contrastive circuit discovery.} A method for finding behavior-specific neuron circuits (e.g., refusal, tone, style) by contrasting MLP activations between two prompt sets, enabling steering of high-level behaviors beyond factual recall.
 
-    \item \textbf{Edge attribution and hourglass architecture.} A procedure for tracing neuron-to-neuron information flow within circuits, revealing that circuits exhibit an hourglass topology with bottleneck neurons that serve as both major source hubs (high fan-out) and target hubs (high fan-in).
+    \item \textbf{Hourglass architecture discovery.} Building on the edge attribution method of \citet{arora2025circuits}, we trace neuron-to-neuron information flow and find that circuits exhibit an hourglass topology with bottleneck neurons that serve as both major source hubs (high fan-out) and target hubs (high fan-in).
 
-    \item \textbf{Universal neuron detection and super weight connection.} An automated procedure for detecting universal neurons that fire across all tasks, and a connection between these neurons and super weights \citep{zhong2024superweights}---anomalously large weight magnitudes in early layers that act as task-agnostic infrastructure.
+    \item \textbf{Universal neuron detection and super weight connection.} An automated procedure for detecting universal neurons that fire across all tasks, and a connection between these neurons and super weights \citep{yu2024superweights}---anomalously large weight magnitudes in early layers that act as task-agnostic infrastructure.
 
     \item \textbf{Cross-model generalization.} Demonstration that the same code, with \emph{zero modifications}, discovers and steers circuits in Llama-3.1-8B, Qwen2.5-7B, and Mistral-7B.
 \end{enumerate}
@@ -86,7 +87,7 @@ Our contributions are:
 
 Layer-wise Relevance Propagation (LRP) \citep{bach2015pixel} decomposes a model's output prediction into per-input-feature relevance scores by propagating relevance backward through the network using local redistribution rules.
 AttnLRP \citep{achtibat2024relp} extends LRP to transformers.
-\citet{arora2025circuits} demonstrate that AttnLRP achieves 0.956 Pearson correlation with activation patching on circuit discovery benchmarks while requiring only a single forward-backward pass.
+\citet{jafari2025relp} demonstrate that RelP achieves 0.956 Pearson correlation with activation patching on circuit discovery benchmarks (GPT-2 Large, IOI task) while requiring only a single forward-backward pass.
 
 \citet{arora2025circuits} apply AttnLRP with three modifications specific to the Llama MLP architecture, which we describe in Section~\ref{sec:method}.
 Their key finding is that circuits identified in the \emph{neuron basis} (individual MLP intermediate activations) are remarkably sparse: ${\sim}100$--$200$ neurons explain complete task circuits, compared to thousands of SAE features.
@@ -100,7 +101,7 @@ While effective, CAA operates in the full residual stream and does not decompose
 
 \subsection{Super Weights}
 
-\citet{zhong2024superweights} identify \emph{super weights}: individual weight matrix entries in early transformer layers with magnitudes 1000--5000$\times$ larger than typical entries.
+\citet{yu2024superweights} identify \emph{super weights}: individual weight matrix entries in early transformer layers with magnitudes 1000--5000$\times$ larger than typical entries.
 These parameters are critical for model function---zeroing a single column can collapse model output.
 Their role within the broader circuit structure of LLMs has not been previously characterized.
 
@@ -236,7 +237,7 @@ We analyze this graph for:
 \subsection{Super Weight Detection via Edge Attribution}
 \label{sec:superweights}
 
-Super weights \citep{zhong2024superweights} are anomalously large weight parameters in early transformer layers.
+Super weights \citep{yu2024superweights} are anomalously large weight parameters in early transformer layers.
 We detect their signature in circuit edge graphs: a source neuron is flagged as a super weight if its mean $|$edge weight$|$ exceeds $\rho \times$ the median across all source neurons (default $\rho = 10$).
 By running edge attribution on multiple tasks (factual recall and refusal) and taking the \emph{intersection}, we identify neurons that are universal infrastructure rather than task-specific.
 
@@ -548,7 +549,7 @@ The intersection---neurons that are both correlated and causal---represents the 
 \subsection{Super Weights as Universal Infrastructure}
 
 Edge attribution reveals that super weight neurons (L1/N2427 in Llama, L2/N10406 in Qwen) appear as dominant source hubs in \emph{every} circuit we compute, regardless of task.
-Their edge weights are 100--5000$\times$ larger than typical neurons, consistent with the super weight phenomenon described by \citet{zhong2024superweights}.
+Their edge weights are 100--5000$\times$ larger than typical neurons, consistent with the super weight phenomenon described by \citet{yu2024superweights}.
 
 To our knowledge, this provides the first mechanistic account of super weights within the circuit framework: they are not task-specific computational elements but rather \emph{universal infrastructure neurons} whose anomalously large activations propagate through every downstream computation.
 Our blacklisting procedure automatically detects and excludes them, preventing inflation of task-specific circuits.
