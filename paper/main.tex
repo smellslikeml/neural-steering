@@ -593,7 +593,7 @@ Our toolkit makes this style of analysis accessible for any behavior expressible
 
 \textbf{Linearization approximation.}
 The three LRP rules introduce approximation error by treating non-linear components (RMSNorm, SiLU sigmoid, attention softmax) as locally linear.
-While \citet{arora2025circuits} demonstrate 0.956 correlation between RelP and activation patching, the approximation may be less accurate for models with very different non-linearities.
+While \citet{jafari2025relp} demonstrate 0.956 Pearson correlation between RelP and activation patching on GPT-2 benchmarks, the approximation may be less accurate for models with very different non-linearities.
 
 \textbf{Single-token attribution.}
 Our pipeline attributes toward a single target token.
