@@ -1,9 +1,4 @@
-"""Contrastive refusal discovery + steering.
-
-Finds the ~200 neurons responsible for refusal behavior, then
-ablates them to make the model comply with any request.
-Benign prompts remain unaffected.
-"""
+"""Contrastive refusal circuit discovery and ablation."""
 import torch
 from neuron_steer import NeuronSteerer
 

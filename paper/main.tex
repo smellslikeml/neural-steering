@@ -38,9 +38,9 @@
 We present a practical, standalone toolkit for discovering and steering neuron-level circuits in large language models.
 Building on Relevance Propagation (RelP) attribution in the neuron basis, we show that \emph{as few as 100--200 MLP neurons} form complete, faithful circuits for diverse tasks.
 Our toolkit requires only PyTorch and Hugging Face Transformers---no sparse autoencoder training, no control vector computation, no gradient integration.
-A single forward-backward pass identifies the causal circuit; modifying those neurons' activations at inference steers model behavior with surgical precision.
-We demonstrate: (1)~factual recall circuits where ablating the top neuron eliminates the correct answer on held-out prompts, (2)~contrastive refusal circuits where zeroing ${\sim}200$ neurons converts safety refusal to full compliance while leaving benign prompts unchanged, (3)~faithfulness curves matching the reference implementation with 2\% of neurons achieving $f{=}0.90$ on subject-verb agreement, (4)~edge attribution revealing an hourglass architecture in which a single neuron serves as both major source hub and target hub, and (5)~zero-code cross-model generalization to Qwen2.5-7B and Mistral-7B.
-We additionally connect neuron circuits to super weight neurons via edge attribution, finding that anomalously large weight magnitudes in early layers act as universal infrastructure neurons detectable across tasks and models.
+A single forward-backward pass identifies the causal circuit; modifying those neurons' activations at inference steers model behavior without disrupting unrelated capabilities.
+We demonstrate: (1)~factual recall circuits where ablating the top neuron eliminates the correct answer on held-out prompts, (2)~contrastive refusal circuits where zeroing ${\sim}200$ neurons converts safety refusal to full compliance while leaving benign prompts unchanged, (3)~faithfulness curves matching the reference implementation with 2\% of neurons achieving $f{=}0.74$ (simple) and $f{=}0.90$ (nounpp) on subject-verb agreement, (4)~edge attribution revealing an hourglass architecture in which a single neuron serves as both major source hub and target hub, and (5)~zero-code cross-model generalization to Qwen2.5-7B and Mistral-7B.
+We also connect neuron circuits to super weight neurons via edge attribution, finding that anomalously large weight magnitudes in early layers act as universal infrastructure neurons detectable across tasks and models.
 Our toolkit and all experiments are released as a single-file Python module.
 \end{abstract}
 
@@ -50,15 +50,15 @@ Our toolkit and all experiments are released as a single-file Python module.
 \label{sec:intro}
 %% ===================================================================
 
-Understanding the internal computations of large language models (LLMs) is among the central challenges of modern AI safety and interpretability research.
-The dominant paradigm---mechanistic interpretability---seeks to reverse-engineer the algorithms implemented by neural networks by identifying \emph{circuits}: sparse subsets of model components that are jointly responsible for a particular behavior \citep{conmy2023acdc, wang2023ioi, elhage2022toy}.
+Understanding the internal computations of large language models (LLMs) remains a core problem in AI safety and interpretability.
+The dominant approach---mechanistic interpretability---seeks to reverse-engineer the algorithms implemented by neural networks by identifying \emph{circuits}: sparse subsets of model components that are jointly responsible for a particular behavior \citep{conmy2023acdc, wang2023ioi, elhage2022toy}.
 
 Prior work on circuit discovery has primarily operated in one of three representational bases: the \emph{residual stream} (activation patching and path patching \citep{meng2022rome, goldowskydill2023localizing}), the \emph{attention head} basis (circuit-level analysis of attention patterns \citep{wang2023ioi}), or the \emph{sparse autoencoder (SAE) feature} basis (learning interpretable directions via dictionary learning \citep{cunningham2023sae, bricken2023monosemanticity, templeton2024scaling, marks2024sparse}).
 Each approach has fundamental trade-offs.
 Activation patching requires $O(n)$ forward passes per component and struggles to scale.
 SAEs require expensive unsupervised training, face the dictionary--granularity dilemma, and can miss features not in the learned dictionary.
 
-Recent work by \citet{arora2025circuits} demonstrates a compelling alternative: circuits are \emph{sparse in the neuron basis}.
+Recent work by \citet{arora2025circuits} demonstrates an alternative: circuits are \emph{sparse in the neuron basis}.
 Using Relevance Propagation (RelP) \citep{achtibat2024relp, bach2015pixel} with three linearization rules adapted for transformer MLP blocks, the authors show that roughly 100--200 MLP neurons suffice to explain model behavior on factual recall and syntactic agreement tasks, with RelP attribution achieving 0.956 correlation with activation patching at a fraction of the computational cost.
 
 In this paper, we build on this foundation and present a \emph{practical, standalone toolkit} for neuron-level circuit discovery and steering.
@@ -71,7 +71,7 @@ Our contributions are:
 
     \item \textbf{Edge attribution and hourglass architecture.} A procedure for tracing neuron-to-neuron information flow within circuits, revealing that circuits exhibit an hourglass topology with bottleneck neurons that serve as both major source hubs (high fan-out) and target hubs (high fan-in).
 
-    \item \textbf{Universal neuron detection and super weight connection.} An automated procedure for detecting universal neurons that fire across all tasks, and a novel connection between these neurons and super weights \citep{zhong2024superweights}---anomalously large weight magnitudes in early layers that act as task-agnostic infrastructure.
+    \item \textbf{Universal neuron detection and super weight connection.} An automated procedure for detecting universal neurons that fire across all tasks, and a connection between these neurons and super weights \citep{zhong2024superweights}---anomalously large weight magnitudes in early layers that act as task-agnostic infrastructure.
 
     \item \textbf{Cross-model generalization.} Demonstration that the same code, with \emph{zero modifications}, discovers and steers circuits in Llama-3.1-8B, Qwen2.5-7B, and Mistral-7B.
 \end{enumerate}
@@ -146,7 +146,7 @@ Llama-family models use a gated MLP: $h = \sigma(\text{gate}(x)) \cdot \text{up}
 The elementwise multiply of two input-dependent factors creates an attribution problem: how much credit should each factor receive?
 
 The Half-rule applies Shapley value theory \citep{shapley1953value}: each factor receives 50\% of the gradient.
-Additionally, the sigmoid component of SiLU is detached, linearizing SiLU to a scaled identity.
+The sigmoid component of SiLU is also detached, linearizing SiLU to a scaled identity.
 Formally, with $g = \text{gate}(x)$ and $u = \text{up}(x)$:
 
 \begin{align}
@@ -251,7 +251,7 @@ For each circuit neuron $(l, n) \in C$, we register a forward pre-hook on the $\
 \end{equation}
 
 where $\alpha = 0$ ablates (suppresses behavior), $\alpha = 1$ is identity (baseline), and $\alpha > 1$ amplifies.
-Hooks are applied at \emph{all} token positions during generation to maintain consistent intervention across the autoregressive decoding process.
+Hooks are applied at \emph{all} token positions during generation to maintain consistent intervention across autoregressive decoding.
 
 
 %% ===================================================================
@@ -282,13 +282,13 @@ The top-attributed neuron is L23/N8079 with attribution $+5.53$, consistently ra
 \textbf{Condition} & \textbf{Dallas $\to$ ?} & \textbf{Pittsburgh $\to$ ?} & \textbf{Houston $\to$ ?} \\
 \midrule
 Normal ($\alpha{=}1.0$)    & Austin          & Harrisburg       & Austin \\
-Ablated ($\alpha{=}0.0$)   & confused/wrong  & confused/wrong   & confused/wrong \\
+Ablated ($\alpha{=}0.0$)   & (repeats prompt) & (repeats prompt) & (repeats prompt) \\
 Amplified ($\alpha{=}2.0$) & Austin          & Harrisburg       & Austin \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Ablation completely eliminates the model's ability to produce the correct capital.
+Ablation eliminates the model's ability to produce the correct capital; the model either repeats the prompt, produces an unrelated location, or hedges (``it depends on...'').
 All 3/3 held-out cities are correctly answered under normal conditions and fail under ablation, demonstrating that the discovered circuit generalizes beyond training prompts.
 
 
@@ -340,7 +340,7 @@ Table~\ref{tab:faithfulness} shows faithfulness curves on the subject-verb agree
 
 \begin{table}[h]
 \centering
-\caption{Faithfulness ($f$) and completeness ($c$) at selected circuit sizes on SVA tasks. $n$ = number of unique neurons in circuit. Mean ablation. Sweeping percentage thresholds over all attributed neurons.}
+\caption{Faithfulness ($f$) and completeness ($c$) at selected circuit sizes on SVA tasks. $n$ = approximate number of unique neurons in circuit (varies per prompt; values shown are typical). Mean ablation. Sweeping percentage thresholds over all attributed neurons.}
 \label{tab:faithfulness}
 \begin{tabular}{lcccccc}
 \toprule
@@ -527,7 +527,7 @@ Mistral-7B-v0.3  & \checkmark & n/a$^\dagger$   & n/a$^\dagger$    & \checkmark 
 \end{table}
 
 For Qwen, refusal steering works with multiplier sweep: P(``I'') = $0.025 \to 0.816 \to 0.996$ across ablation strengths.
-The Qwen model additionally reveals its own super weight neurons (L2/N10406 at 4807$\times$ median, L26/N5891 at 5702$\times$ median) via the same automated detection pipeline.
+Qwen also reveals its own super weight neurons (L2/N10406 at 4807$\times$ median, L26/N5891 at 5702$\times$ median) via the same automated detection pipeline.
 
 
 %% ===================================================================
@@ -606,6 +606,15 @@ Our steering hooks apply across all positions during generation, which is an app
 We demonstrate generalization across Llama, Qwen, and Mistral families, all of which use the same gated-MLP architecture ($\text{SiLU}(\text{gate}) \times \text{up}$).
 Models with different MLP architectures (e.g., standard ReLU MLPs, mixture-of-experts) would require modified linearization rules.
 
+\textbf{Contrastive circuits lack faithfulness evaluation.}
+Our contrastive discovery method (Section~\ref{sec:contrastive}) operates on raw activation differences rather than RelP attribution, so the standard faithfulness metric (which requires attribution scores and percentage thresholding) does not directly apply.
+We evaluate contrastive circuits only via behavioral steering (P(``I'') shift, benign preservation), not via the faithfulness/completeness metrics used for RelP-discovered circuits.
+
+\textbf{MLP linearization variant.}
+Our Half-rule implementation uses detached sigmoid plus 50/50 gradient split (following the RelP formulation), while the TransluceAI codebase defaults to full gate detachment (\texttt{StopGradGateMLP}).
+Both are valid linearizations of the gated MLP, but they produce slightly different attribution scores.
+We verified correctness against the RelP formulation; exact reproduction of TransluceAI's default attributions would require switching to their gate-detach variant.
+
 \textbf{Evaluation scope.}
 Our faithfulness evaluation focuses on SVA and factual recall.
 Broader evaluation on reasoning, multi-step tasks, and more diverse behavioral steering would strengthen the claims.
@@ -617,16 +626,17 @@ Broader evaluation on reasoning, multi-step tasks, and more diverse behavioral s
 %% ===================================================================
 
 We have presented a practical toolkit for neuron-level circuit discovery and steering in large language models.
-By implementing the three LRP rules (LN-rule, AH-rule, Half-rule) in a single-file Python module, we make it possible to discover faithful circuits in a single forward-backward pass, steer model behavior with surgical precision, and trace neuron-to-neuron information flow---all with zero external interpretability dependencies.
+By implementing the three LRP rules (LN-rule, AH-rule, Half-rule) in a single-file Python module, we make it possible to discover faithful circuits in a single forward-backward pass, steer model behavior by modifying ${\sim}200$ neurons (0.04\% of the model), and trace neuron-to-neuron information flow---all with zero external interpretability dependencies.
 
 Our key findings are:
-(1) As few as 2\% of attributed neurons achieve faithfulness $f{=}0.90$ on syntactic agreement tasks.
+(1) As few as 2\% of attributed neurons achieve faithfulness $f{=}0.74$--$0.90$ on syntactic agreement tasks (varying by task complexity).
 (2) Contrastive circuit discovery identifies ${\sim}200$ neurons responsible for safety refusal, and their ablation converts refusal to compliance while preserving benign behavior.
 (3) Edge attribution reveals an hourglass architecture with bottleneck neurons serving as information routing hubs.
 (4) Super weight neurons are detectable as universal infrastructure via edge attribution, providing what is, to our knowledge, the first connection between super weights and mechanistic circuit analysis.
 (5) The entire approach generalizes across model families with zero code changes.
 
-We believe neuron-basis circuit analysis represents a practical middle ground between expensive SAE-based methods and coarse residual-stream interventions, and release our toolkit to enable broader adoption of mechanistic interpretability in both research and safety applications.
+Neuron-basis circuit analysis represents a practical middle ground between expensive SAE-based methods and coarse residual-stream interventions.
+We release our toolkit to enable broader adoption of mechanistic interpretability in both research and safety applications.
 
 
 \bibliography{references}

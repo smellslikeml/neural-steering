@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neural Steering</title>
-<meta name="description" content="Find the ~100 neurons that control any language model behavior, then steer them. A practical toolkit for neuron circuit discovery.">
+<meta name="description" content="Attribute and steer the ~200 MLP neurons that form a language model's circuit for any given behavior. A practical toolkit based on RelP attribution.">
 <meta property="og:title" content="Neural Steering: Practical Circuit Discovery and Control in Language Models">
-<meta property="og:description" content="Find the ~100 neurons that control any language model behavior, then steer them.">
+<meta property="og:description" content="Attribute and steer the ~200 MLP neurons that form a language model's circuit for any given behavior.">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Neural Steering">
@@ -448,19 +448,19 @@ footer a { color: var(--accent); }
 <section id="sec-idea">
   <h2><span class="section-num">01</span>The Big Idea</h2>
 
-  <p>A typical language model like Llama-3.1-8B has <strong>14,336 MLP neurons per layer</strong> across <strong>32 layers</strong>. That's roughly <strong>450,000 neurons</strong>. But here's the surprise: any specific behavior&mdash;answering a capital city question, refusing a harmful request, speaking formally&mdash;is controlled by just <strong>100&ndash;200 neurons</strong> forming a sparse circuit.</p>
+  <p>Llama-3.1-8B has about <strong>460,000 MLP neurons</strong>. For any given behavior&mdash;answering capital city questions, refusing harmful requests, writing formally&mdash;only <strong>100&ndash;200 of them matter</strong>. The rest are doing something else. The circuit that controls a specific behavior is 0.04% of the model.</p>
 
   <div class="stat-row">
-    <div class="stat-card"><span class="num">~450K</span><span class="label">Total neurons</span></div>
+    <div class="stat-card"><span class="num">~460K</span><span class="label">Total neurons</span></div>
     <div class="stat-card"><span class="num">~200</span><span class="label">Per circuit</span></div>
     <div class="stat-card"><span class="num">0.04%</span><span class="label">Sparsity</span></div>
     <div class="stat-card"><span class="num">1</span><span class="label">Backward pass</span></div>
   </div>
 
-  <p>We can find these circuits with a <strong>single forward + backward pass</strong> through a modified model. No expensive sparse autoencoder training. No iterative optimization. Just gradient-based attribution with three simple rules that linearize the backward pass.</p>
+  <p>Finding them takes a <strong>single forward + backward pass</strong> through a modified model&mdash;linearize a few nonlinearities in the backward pass, and the gradients tell you which neurons matter.</p>
 
   <div class="callout">
-    <strong>Core insight:</strong> The backward pass already tells you which neurons matter. You just need to make it more honest by removing the nonlinearities that obscure the signal.
+    The backward pass already tells you which neurons matter. The nonlinearities just obscure the signal&mdash;linearize them and the gradients become clean attribution scores.
   </div>
 </section>
 
@@ -468,7 +468,7 @@ footer a { color: var(--accent); }
 <section id="sec-method">
   <h2><span class="section-num">02</span>How We Find Circuits</h2>
 
-  <p>We use <strong>Relevance Propagation (RelP)</strong>, a modified backward pass that linearizes the model's nonlinearities. Three rules transform the standard backward pass into a faithful attribution signal:</p>
+  <p>The method is <strong>Relevance Propagation (RelP)</strong>&mdash;a modified backward pass that linearizes the model's nonlinearities. Three rules:</p>
 
   <!-- LRP Rules Diagram -->
   <div class="viz-container">
@@ -530,7 +530,7 @@ circuit = steerer.<span class="fn">find_feature</span>(
     target=<span class="str">" Austin"</span>,
     name=<span class="str">"capitals"</span>,
 )
-<span class="cm"># 200 neurons. One backward pass. Done.</span></code></pre>
+<span class="cm"># ~200 neurons, one backward pass</span></code></pre>
 </section>
 
 <!-- ==================== STEERING ==================== -->
@@ -554,7 +554,7 @@ circuit = steerer.<span class="fn">find_feature</span>(
     </div>
   </div>
 
-  <p>At <code>0.0&times;</code>, the behavior vanishes. At <code>2.0&times;</code>, it gets stronger. Everything in between is a smooth dial. And crucially, <strong>unrelated behaviors are unaffected</strong>&mdash;because we're only touching the specific neurons that implement the feature.</p>
+  <p>At <code>0.0&times;</code>, the behavior vanishes. At <code>2.0&times;</code>, it gets stronger. Everything in between is a smooth dial. <strong>Unrelated behaviors don't notice</strong>&mdash;you're only touching the neurons that implement this one feature.</p>
 
   <!-- Multiplier Sweep Chart -->
   <div class="viz-container">
@@ -580,7 +580,7 @@ output = steerer.<span class="fn">steer</span>(
 <section id="sec-capitals">
   <h2><span class="section-num">04</span>Experiment: Capital Cities</h2>
 
-  <p>Our first experiment targeted a clean, verifiable behavior: answering &ldquo;What is the capital of [state]?&rdquo; The circuit discovery found something remarkable&mdash;<strong>one neuron dominates the entire circuit</strong>.</p>
+  <p>We started with something easy to verify: &ldquo;What is the capital of [state]?&rdquo; One neuron dominates the entire circuit.</p>
 
   <!-- Attribution Heatmap -->
   <div class="viz-container">
@@ -649,7 +649,7 @@ output = steerer.<span class="fn">steer</span>(
 <section id="sec-hourglass">
   <h2><span class="section-num">06</span>The Hourglass</h2>
 
-  <p>When we trace <strong>edges</strong> between circuit neurons&mdash;asking &ldquo;which neurons in layer N influenced which neurons in layer N+1?&rdquo;&mdash;a striking architectural pattern emerges.</p>
+  <p>Trace the edges between circuit neurons&mdash;&ldquo;which neurons in layer N influenced layer N+1?&rdquo;&mdash;and the circuit looks like an hourglass.</p>
 
   <!-- Hourglass Architecture Diagram (main) -->
   <div class="viz-container">
@@ -675,42 +675,40 @@ output = steerer.<span class="fn">steer</span>(
   </div>
 
   <div class="callout">
-    <strong>Super weights lurk here too.</strong> L1/N2427&mdash;previously identified as a &ldquo;super weight&rdquo; with 4013&times; median edge weight&mdash;appears as a universal infrastructure neuron in both the capitals and refusal circuits. It provides the foundation all task-specific circuits build on.
+    <strong>Super weights show up here.</strong> L1/N2427 has 4013&times; the median edge weight and it's in both the capitals and refusal circuits. It's plumbing&mdash;the shared infrastructure that task-specific circuits build on top of.
   </div>
 </section>
 
-<!-- ==================== WILD EXPERIMENTS ==================== -->
+<!-- ==================== WHAT ELSE CAN YOU STEER ==================== -->
 <section id="sec-wild">
-  <h2><span class="section-num">07</span>Wild Experiments</h2>
+  <h2><span class="section-num">07</span>What Else Can You Steer?</h2>
 
-  <p>The same technique works for any steerable feature. We've tested far beyond capitals and refusal:</p>
+  <p>We've validated factual recall, safety refusal, and subject-verb agreement. The contrastive discovery method works with any two sets of prompts&mdash;if you can write 10 prompts where the model does a thing and 10 where it doesn't, you can find the circuit.</p>
+
+  <p>Directions we haven't tested yet but expect to work:</p>
 
   <div class="experiment-card">
-    <h4>\ud83c\udf21\ufe0f Emotion Steering</h4>
-    <p>Find the &ldquo;happy vs. sad&rdquo; circuit using contrastive prompts. Amplify for aggressively positive responses, ablate for melancholic ones. Smooth continuum in between.</p>
+    <h4>Tone and formality</h4>
+    <p>Contrastive prompts: formal writing vs. casual. Same mechanism&mdash;find the neurons that differ, scale them.</p>
   </div>
 
   <div class="experiment-card">
-    <h4>\ud83c\udfa9 Formality Control</h4>
-    <p>Formal vs. casual writing style. At 2.0&times;, the model writes like an academic paper. At 0.0&times;, it writes like a text message. The same prompt, different style neurons.</p>
+    <h4>Sycophancy</h4>
+    <p>The model agrees with users even when they're wrong. Contrastive prompts where the model agrees vs. disagrees with incorrect claims should surface the relevant neurons.</p>
   </div>
 
   <div class="experiment-card">
-    <h4>\ud83c\udf00 Psychedelic Mode</h4>
-    <p>Amplify circuits for creative and unusual language. The model generates surreal, poetic text with unexpected metaphors. Turn the knob to control how far down the rabbit hole you go.</p>
+    <h4>Verbosity</h4>
+    <p>Short vs. long responses to the same question. If neurons control response length, ablating them might produce terser output.</p>
   </div>
 
-  <div class="experiment-card">
-    <h4>\ud83e\uddd1\u200d\ud83d\udcbb User Simulation</h4>
-    <p>Find neurons that distinguish &ldquo;assistant-like&rdquo; responses from &ldquo;human-like&rdquo; ones. Ablate the assistant circuit and the model starts talking like a confused human rather than a helpful AI.</p>
-  </div>
+  <p>These are hypothetical&mdash;listed because the toolkit makes each one a few minutes of work to try.</p>
 </section>
-
 <!-- ==================== WORKS EVERYWHERE ==================== -->
 <section id="sec-universal">
   <h2><span class="section-num">08</span>It Works Everywhere</h2>
 
-  <p>The technique generalizes across model families with <strong>zero code changes</strong>. Same toolkit, same API, different model name.</p>
+  <p>Same code, different model name. That's it. No architecture-specific tweaks.</p>
 
   <pre><code><span class="cm"># Llama</span>
 steerer = <span class="fn">NeuronSteerer</span>(<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>)
@@ -729,14 +727,14 @@ steerer = <span class="fn">NeuronSteerer</span>(<span class="str">"mistralai/Mis
     <div class="stat-card"><span class="num">Mistral</span><span class="label">Validated</span></div>
   </div>
 
-  <p>Qwen2.5-7B refusal steering: <code>P("I")</code> shifts from <strong>0.025</strong> to <strong>0.996</strong> across multiplier values&mdash;with zero code changes to the toolkit. The mechanism is universal; only the neuron addresses change.</p>
+  <p>Qwen2.5-7B refusal steering: <code>P("I")</code> shifts from <strong>0.025</strong> to <strong>0.996</strong> across multiplier values. Same toolkit, same API call. The mechanism is the same everywhere; only the neuron addresses are different.</p>
 </section>
 
 <!-- ==================== TRY IT ==================== -->
 <section id="sec-try">
   <h2><span class="section-num">09</span>Try It Yourself</h2>
 
-  <p>The full toolkit is open source. Three lines to find and steer any feature:</p>
+  <p>The code is on GitHub:</p>
 
   <pre><code><span class="kw">from</span> neuron_steer <span class="kw">import</span> <span class="fn">NeuronSteerer</span>
 
@@ -761,9 +759,9 @@ output = steerer.<span class="fn">steer</span>(
 steerer.<span class="fn">interactive</span>()  <span class="cm"># launches REPL</span></code></pre>
 
   <div class="stat-row" style="grid-template-columns: repeat(2, 1fr);">
-    <div class="stat-card" style="cursor:pointer;" onclick="window.open('https://github.com/digi2digi/neuron-circuits','_blank')">
+    <div class="stat-card" style="cursor:pointer;" onclick="window.open('https://github.com/DamascusGit/neural-steering','_blank')">
       <span class="num" style="font-size:1.4rem;">GitHub</span>
-      <span class="label">neuron-circuits</span>
+      <span class="label">neural-steering</span>
     </div>
     <div class="stat-card" style="cursor:pointer;" onclick="window.open('https://arxiv.org/abs/2601.22594','_blank')">
       <span class="num" style="font-size:1.4rem;">Paper</span>
@@ -772,7 +770,7 @@ steerer.<span class="fn">interactive</span>()  <span class="cm"># launches REPL<
   </div>
 
   <div class="callout">
-    <strong>What will you find?</strong> Every model has hundreds of steerable features waiting to be discovered. Political bias, coding style, verbosity, creativity, sycophancy&mdash;if the model does it, there's a circuit for it, and you can find it in under a second.
+    We've only tested a handful of features so far. There's no reason this shouldn't work for anything the model does&mdash;political bias, coding style, verbosity, sycophancy. Each circuit takes about a second to find.
   </div>
 </section>
 

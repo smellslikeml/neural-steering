@@ -1,5 +1,5 @@
 """
-neuron_steer.py - Neuron Circuit Discovery and Steering for Llama Models
+neuron_steer.py - Neuron Circuit Discovery and Steering for Language Models
 
 Based on: "Language Model Circuits Are Sparse in the Neuron Basis" (arxiv 2601.22594)
 Implementation by cc
@@ -582,6 +582,12 @@ class _HalfRuleMultiply(torch.autograd.Function):
 
 class LinearizedMLP(nn.Module):
     """Wraps LlamaMLP with detached sigmoid + half-rule.
+
+    Matches TransluceAI's RelPGradMLP mode (grad.py:384-406), NOT their default
+    StopGradGateMLP which fully detaches the gate activation.  Our approach is
+    more principled: only the sigmoid is detached while the linear component of
+    SiLU (x * sigmoid(x)) keeps gradient flow, then the half-rule distributes
+    credit evenly between gate and up projections.
 
     Standard Llama MLP:
         hidden = SiLU(gate_proj(x)) * up_proj(x)

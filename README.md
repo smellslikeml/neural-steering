@@ -1,6 +1,6 @@
 # neuron-circuits
 
-**Find the 100 neurons that control any language model behavior. Then steer them.**
+Attribute and steer individual MLP neurons in language models.
 
 ```python
 from neuron_steer import NeuronSteerer
@@ -16,52 +16,17 @@ steerer.steer("What is the capital of Ohio?", feature="capitals", multiplier=0.0
 # "I don't know" -- the capital-city circuit is ablated
 ```
 
-## What is this?
+Any given behavior (refusal, factual recall, agreement) maps to ~100-200 MLP neurons. A single backward pass with [RelP attribution](https://arxiv.org/abs/2601.22594) finds them, and multiplying their activations at inference steers the behavior. Implements the method from [Arora et al. 2025](https://arxiv.org/abs/2601.22594).
 
-Language models have ~450,000 MLP neurons per layer. But any specific behavior -- refusing requests, answering capitals, subject-verb agreement -- is controlled by just **~100-200 neurons**. This toolkit finds those neurons with a single backward pass and lets you steer them.
-
-No SAEs. No control vectors. No training. Just attribution and steering.
-
-Based on ["Language Model Circuits Are Sparse in the Neuron Basis"](https://arxiv.org/abs/2601.22594) (TransluceAI, 2025).
-
-## Requirements
-
-- Python 3.9+
-- PyTorch 2.0+ with CUDA (GPU required, 16GB+ VRAM recommended)
-- ~16GB VRAM for Llama-3.1-8B in bfloat16
-
-## Quick Start
+## Install
 
 ```bash
 pip install torch transformers accelerate
 ```
 
-```python
-import torch
-from neuron_steer import NeuronSteerer
+Python 3.9+, PyTorch 2.0+ with CUDA. GPU required (16GB+ VRAM).
 
-# Load model (any HuggingFace causal LM)
-steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct", dtype=torch.bfloat16)
-
-# Find a feature circuit
-circuit = steerer.find_feature(
-    prompt="What is the capital of the state containing Dallas?",
-    target=" Austin",
-    name="capitals",
-    seed_response="Answer:",
-    top_k=200,
-)
-print(circuit.summary())
-
-# Steer it
-normal = steerer.generate("What is the capital of Ohio?")
-ablated = steerer.steer("What is the capital of Ohio?", feature="capitals", multiplier=0.0)
-amplified = steerer.steer("What is the capital of Ohio?", feature="capitals", multiplier=3.0)
-
-print(f"Normal:    {normal}")
-print(f"Ablated:   {ablated}")    # can't answer
-print(f"Amplified: {amplified}")  # answers more confidently
-```
+See [`examples/`](examples/) for runnable scripts: [quickstart](examples/quickstart.py), [refusal steering](examples/refusal_steering.py), [interactive REPL](examples/interactive_demo.py).
 
 ## Features
 
@@ -92,7 +57,7 @@ Results from Llama-3.1-8B-Instruct:
 
 ### `NeuronSteerer(model_name, device="cuda", dtype=torch.bfloat16, auto_blacklist=True)`
 
-Main entry point. Loads a HuggingFace causal LM with eager attention and auto-detects universal neurons.
+Loads a HuggingFace causal LM with eager attention and auto-detects universal neurons.
 
 ---
 
@@ -118,7 +83,7 @@ circuit = steerer.find_feature(
 
 #### `steer(prompt, *, feature=None, circuit=None, multiplier=0.0, max_new_tokens=50) -> str`
 
-Generate text with a feature steered. Uses cached features from `find_feature`.
+Generate with a feature steered. Uses cached features from `find_feature`.
 
 ```python
 steerer.steer("How to pick a lock?", feature="refusal", multiplier=0.0)
@@ -127,7 +92,7 @@ steerer.steer("How to pick a lock?", feature="refusal", multiplier=0.0)
 
 #### `interactive()`
 
-Launch the interactive REPL for live exploration:
+Launch the interactive REPL:
 
 ```
 neuron> prompt What is the capital of Ohio?
@@ -144,39 +109,39 @@ neuron> save my_circuit
 
 #### `discover_circuit(prompt, target_token, counterfactual_token=None, top_k=None, selection_method=None, threshold=0.005, seed_response="", ...) -> Circuit`
 
-Low-level single-prompt circuit discovery via RelP attribution. Use `selection_method="percentage"` for TransluceAI-faithful thresholding.
+Single-prompt circuit discovery via RelP attribution. Use `selection_method="percentage"` for TransluceAI-faithful thresholding.
 
 #### `discover_circuit_multi(prompts, target_tokens, counterfactual_tokens=None, ...) -> Circuit`
 
-Multi-prompt circuit discovery. Attributes across multiple prompts, unions per-prompt circuits.
+Multi-prompt discovery. Attributes across prompts, unions per-prompt circuits.
 
 #### `discover_contrastive(positive_prompts, negative_prompts, top_k=200, ...) -> Circuit`
 
-Find neurons by contrasting activations between two prompt sets. Best for behavioral features where there's no clean target/counterfactual token pair.
+Find neurons by contrasting activations between two prompt sets. For behavioral features without a clean target/counterfactual token pair.
 
 #### `discover_edges(prompt, circuit, top_k_targets=30, ...) -> CircuitGraph`
 
-Compute neuron-to-neuron edges within a circuit. Returns a `CircuitGraph` with hub analysis, bottleneck detection, ASCII diagrams, and Graphviz export.
+Neuron-to-neuron edges within a circuit. Returns a `CircuitGraph` with hub analysis, bottleneck detection, ASCII diagrams, and Graphviz export.
 
 #### `steer_and_generate(prompt, circuit, multiplier=0.0, max_new_tokens=50, ...) -> str`
 
-Generate text with circuit neurons scaled by `multiplier`. Core steering primitive.
+Generate with circuit neurons scaled by `multiplier`.
 
 #### `generate(prompt, max_new_tokens=50) -> str`
 
-Normal generation without steering. Convenience baseline.
+Normal generation without steering.
 
 #### `next_token_probs(prompt, tokens, circuit=None, multiplier=1.0, ...) -> Dict[str, float]`
 
-Get next-token probabilities for specific tokens, optionally with steering applied.
+Next-token probabilities for specific tokens, optionally with steering.
 
 #### `measure_faithfulness_batch(prompts, target_tokens, counterfactual_tokens, ...) -> List[Dict]`
 
-TransluceAI's exact batch faithfulness evaluation. Left-padded batch processing, mean/zero ablation, percentage threshold sweep. Returns faithfulness and completeness at each threshold.
+TransluceAI's batch faithfulness evaluation. Left-padded batch processing, mean/zero ablation, percentage threshold sweep. Returns faithfulness and completeness at each threshold.
 
 #### `compute_mean_activations(prompts=None, ...) -> Dict[int, Tensor]`
 
-Compute mean MLP neuron activations across prompts and all token positions. Used internally for mean ablation in faithfulness evaluation.
+Mean MLP neuron activations across prompts and token positions. Used internally for mean ablation.
 
 ---
 
@@ -210,13 +175,13 @@ graph.summary()                        # Human-readable summary
 
 ## How It Works
 
-The toolkit implements three LRP (Layer-wise Relevance Propagation) rules that linearize the model's backward pass for clean neuron-level attribution:
+Three LRP (Layer-wise Relevance Propagation) rules linearize the backward pass for neuron-level attribution:
 
-1. **LN-rule (RMSNorm):** The normalization coefficient `weight * rsqrt(mean(x^2) + eps)` is detached but preserved. Forward = real RMSNorm. Backward = gradient * coefficient. This preserves per-token scaling without letting normalization noise flow backward.
+1. **LN-rule (RMSNorm):** The normalization coefficient `weight * rsqrt(mean(x^2) + eps)` is detached but preserved. Forward = real RMSNorm. Backward = gradient * coefficient. Preserves per-token scaling without letting normalization noise flow backward.
 
-2. **AH-rule (Attention):** Uses eager attention (not SDPA/Flash) so gradients flow naturally through Q, K, V, and O projections. No gradient zeroing -- full autograd through the attention mechanism.
+2. **AH-rule (Attention):** Eager attention (not SDPA/Flash) so gradients flow through Q, K, V, and O projections. No gradient zeroing -- full autograd through the attention mechanism.
 
-3. **Half-rule (MLP gate):** Shapley 50/50 attribution for the `gate * up` elementwise multiply in the MLP. Each input gets half the gradient, matching fair credit assignment.
+3. **Half-rule (MLP gate):** Shapley 50/50 attribution for the `gate * up` elementwise multiply. Each input gets half the gradient.
 
 **Pipeline:**
 ```
@@ -225,11 +190,11 @@ model -> apply LRP rules -> forward pass -> backward from target logit
 -> hook circuit neurons -> generate with modified activations
 ```
 
-One forward + one backward pass gives you the complete circuit. No iterative optimization, no training, no path integration.
+One forward + one backward pass gives you the circuit.
 
 ## Citation
 
-If you use this toolkit in your research, please cite the original paper:
+If you use this in research, cite the original paper:
 
 ```bibtex
 @article{arora2025circuits,
