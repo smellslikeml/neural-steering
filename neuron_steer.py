@@ -1034,8 +1034,7 @@ class NeuronSteerer:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            dtype=dtype,
-            device_map=device,
+            device_map="auto",
             attn_implementation="eager",
         )
         self.model.eval()
