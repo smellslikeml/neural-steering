@@ -1024,7 +1024,7 @@ class NeuronSteerer:
     No SAE training, no control vectors. Pure neuron-basis attribution.
     """
 
-    def __init__(self, model_name: str, device: str = "cuda", dtype=torch.bfloat16,
+    def __init__(self, model_name: str, device: str = "cuda",
                  auto_blacklist: bool = True):
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -1034,7 +1034,7 @@ class NeuronSteerer:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=dtype,
+            torch_dtype=torch.bfloat16,
             device_map="auto",
             attn_implementation="eager",
         )
@@ -4418,13 +4418,10 @@ Examples:
     parser.add_argument("--interactive", "-i", action="store_true",
                         help="Launch interactive REPL for live exploration")
     parser.add_argument("--device", "-d", default="cuda", help="Device (default: cuda)")
-    parser.add_argument("--dtype", default="float16", choices=["float16", "bfloat16", "float32"],
-                        help="Model dtype (default: float16)")
 
     args = parser.parse_args()
 
-    dtype_map = {"float16": torch.float16, "bfloat16": torch.bfloat16, "float32": torch.float32}
-    steerer = NeuronSteerer(args.model, device=args.device, dtype=dtype_map[args.dtype])
+    steerer = NeuronSteerer(args.model, device=args.device)
 
     if args.interactive:
         steerer.interactive()
