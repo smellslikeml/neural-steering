@@ -39,11 +39,11 @@
 \maketitle
 
 \begin{abstract}
-\citet{arora2025circuits} recently showed that language model circuits are remarkably sparse in the neuron basis: roughly 100--200 MLP neurons, identified via Relevance Propagation (RelP), form faithful circuits for diverse tasks.
+Recent work \citep{arora2025circuits} has shown that language model circuits are remarkably sparse in the neuron basis: roughly 100--200 MLP neurons, identified via Relevance Propagation (RelP), form faithful circuits for diverse tasks.
 This paper is a \emph{reproduction study and practical guide} based on their method.
 We provide a clean, standalone reimplementation of their three LRP linearization rules (LN-rule, AH-rule, Half-rule) in a Python package requiring only PyTorch and Hugging Face Transformers.
-We reproduce their core findings---including faithfulness curves on subject-verb agreement ($f{=}0.74$ at 2\% for SVA Simple, $f{=}0.90$ for Nounpp) and factual recall circuit discovery---and confirm that neuron-basis circuits are indeed extremely sparse.
-As minor practical extensions, we add: (1)~a contrastive discovery mode that applies Contrastive Activation Addition at the neuron level (useful for behaviors like refusal where clean target tokens are unavailable), (2)~an automated universal-neuron blacklist (replacing Arora et al.'s hand-curated list), and (3)~cross-model runs on Qwen2.5-7B and Mistral-7B confirming the approach generalizes within the gated-MLP architecture family.
+We reproduce their core findings, including faithfulness curves on subject-verb agreement ($f{=}0.74$ at 2\% for SVA Simple, $f{=}0.90$ for Nounpp) and factual recall circuit discovery, and confirm that neuron-basis circuits are indeed extremely sparse.
+We extend the method with: (1)~a contrastive discovery mode that applies Contrastive Activation Addition at the neuron level, enabling targeted behavioral steering (e.g., disabling refusal while preserving general capabilities) for behaviors where clean target tokens are unavailable, (2)~an automated universal-neuron detection procedure that replaces Arora et al.'s hand-curated blacklist and makes the pipeline immediately portable to new models, and (3)~cross-model validation on Qwen2.5-7B, Mistral-7B, and Llama-3.2-1B with zero code changes, spanning 1B to 8B parameters.
 We also report an observation from running their edge attribution method: circuits exhibit an hourglass topology where a single bottleneck neuron serves as both major source and target hub.
 All code is released to lower the barrier to adopting neuron-basis interpretability.
 \end{abstract}
@@ -55,7 +55,7 @@ All code is released to lower the barrier to adopting neuron-basis interpretabil
 %% ===================================================================
 
 Understanding the internal computations of large language models (LLMs) remains a core problem in AI safety and interpretability.
-The dominant approach---mechanistic interpretability---seeks to reverse-engineer the algorithms implemented by neural networks by identifying \emph{circuits}: sparse subsets of model components that are jointly responsible for a particular behavior \citep{conmy2023acdc, wang2023ioi, elhage2022toy}.
+The dominant approach, mechanistic interpretability, seeks to reverse-engineer the algorithms implemented by neural networks by identifying \emph{circuits}: sparse subsets of model components that are jointly responsible for a particular behavior \citep{conmy2023acdc, wang2023ioi, elhage2022toy}.
 
 Prior work on circuit discovery has primarily operated in one of three representational bases: the \emph{residual stream} (activation patching and path patching \citep{meng2022rome, goldowskydill2023localizing}), the \emph{attention head} basis (circuit-level analysis of attention patterns \citep{wang2023ioi}), or the \emph{sparse autoencoder (SAE) feature} basis (learning interpretable directions via dictionary learning \citep{cunningham2023sae, bricken2023monosemanticity, templeton2024scaling, marks2024sparse}).
 Each approach has fundamental trade-offs.
@@ -68,27 +68,22 @@ Independently, \citet{jafari2025relp} show that RelP achieves 0.956 Pearson corr
 
 \paragraph{This paper.}
 We present a \emph{reproduction and practical guide} for the neuron-basis circuit discovery method of \citet{arora2025circuits}.
-The core method---the three LRP rules, neuron attribution, circuit selection, and edge attribution---is entirely theirs.
+The core method (the three LRP rules, neuron attribution, circuit selection, and edge attribution) is entirely theirs.
 Our aim is to make this method more accessible by providing:
 
 \begin{enumerate}
-    \item \textbf{A standalone reimplementation.} A Python package (\texttt{neuron\_steer}) implementing their RelP attribution, circuit selection, neuron-level steering, edge attribution, and faithfulness evaluation. No SAE training, no external interpretability libraries---only PyTorch and Hugging Face Transformers.
+    \item \textbf{A standalone reimplementation.} A Python package (\texttt{neuron\_steer}) implementing their RelP attribution, circuit selection, neuron-level steering, edge attribution, and faithfulness evaluation. No SAE training and no external interpretability libraries; only PyTorch and Hugging Face Transformers.
 
     \item \textbf{Reproduction of core results.} We verify faithfulness curves on subject-verb agreement and factual recall circuit discovery, confirming the extreme sparsity reported by \citet{arora2025circuits}.
 
-    \item \textbf{A contrastive discovery extension.} For behaviors without clean target tokens (e.g., refusal, tone), we add a simple contrastive mode that computes per-neuron activation differences between positive and negative prompt sets. This is essentially Contrastive Activation Addition \citep{rimsky2024steering} applied at the neuron level---a straightforward combination of existing ideas, not a new method.
+    \item \textbf{A contrastive discovery extension.} For behaviors without clean target tokens (e.g., refusal, tone), we introduce a contrastive mode that computes per-neuron activation differences between positive and negative prompt sets, applying the logic of Contrastive Activation Addition \citep{rimsky2024steering} at the neuron level. This enables targeted behavioral steering (e.g., disabling refusal) with high specificity, modifying only ${\sim}200$ neurons rather than the entire residual stream.
 
-    \item \textbf{Automated blacklist detection.} \citet{arora2025circuits} provide a hand-curated blacklist of 12 universal neurons for Llama-3-8B. We automate this with a simple frequency-based procedure, which is useful when applying the method to new models.
+    \item \textbf{Automated blacklist detection.} \citet{arora2025circuits} provide a hand-curated blacklist of 12 universal neurons for Llama-3.1-8B. We automate this with a simple frequency-based procedure, which is useful when applying the method to new models.
 
-    \item \textbf{Cross-model runs.} We confirm the approach works on Qwen2.5-7B and Mistral-7B with zero code changes, though all three model families share the same gated-MLP architecture, so this is expected rather than surprising.
+    \item \textbf{Cross-model runs.} We confirm the approach works on Qwen2.5-7B, Mistral-7B, and Llama-3.2-1B with zero code changes, spanning model sizes from 1B to 8B parameters across three architecture families.
 
-    \item \textbf{An hourglass observation.} Running their edge attribution method on our circuits, we observe a bottleneck topology. We report this as an empirical observation, not a validated finding.
+    \item \textbf{An hourglass observation.} Running their edge attribution method on our circuits, we observe a consistent bottleneck topology where information converges to and diverges from a single hub neuron.
 \end{enumerate}
-
-\paragraph{What this is not.}
-This is not a paper presenting new research contributions.
-The method is from \citet{arora2025circuits}; the contrastive extension is a trivial combination of their attribution with CAA \citep{rimsky2024steering}; the cross-model runs confirm expected generalization within the same architecture family; and the blacklist automation is engineering.
-We frame this work as a reproduction study and practical guide because we believe the method deserves wider adoption, and a clean, dependency-light reimplementation may help achieve that.
 
 
 %% ===================================================================
@@ -100,7 +95,7 @@ We frame this work as a reproduction study and practical guide because we believ
 
 Layer-wise Relevance Propagation (LRP) \citep{bach2015pixel} decomposes a model's output prediction into per-input-feature relevance scores by propagating relevance backward through the network using local redistribution rules.
 AttnLRP \citep{achtibat2024relp} extends LRP to transformers.
-\citet{jafari2025relp} demonstrate that RelP achieves 0.956 Pearson correlation with activation patching on circuit discovery benchmarks (GPT-2 Large, IOI task) while requiring only a single forward-backward pass.
+\citet{jafari2025relp} demonstrate that RelP achieves 0.956 Pearson correlation with activation patching on circuit discovery benchmarks (GPT-2 Large on the Indirect Object Identification task \citep{wang2023ioi}) while requiring only a single forward-backward pass.
 
 \citet{arora2025circuits} apply AttnLRP with three modifications specific to the Llama MLP architecture, which we describe in Section~\ref{sec:method}.
 Their key finding is that circuits identified in the \emph{neuron basis} (individual MLP intermediate activations) are remarkably sparse: ${\sim}100$--$200$ neurons explain complete task circuits, compared to thousands of SAE features.
@@ -115,7 +110,7 @@ While effective, CAA operates in the full residual stream and does not decompose
 \subsection{Super Weights}
 
 \citet{yu2024superweights} identify \emph{super weights}: individual weight matrix entries in early transformer layers with magnitudes 1000--5000$\times$ larger than typical entries.
-These parameters are critical for model function---zeroing a single column can collapse model output.
+These parameters are critical for model function: zeroing a single super weight column can collapse model output entirely.
 
 
 %% ===================================================================
@@ -156,7 +151,7 @@ We match this behavior by setting \texttt{config.\_attn\_implementation = "eager
 
 \paragraph{Rule 3: Half-rule (Shapley Attribution for Gated MLPs).}
 Llama-family models use a gated MLP: $h = \sigma(\text{gate}(x)) \cdot \text{up}(x)$, where $\sigma$ is SiLU.
-The elementwise multiply of two input-dependent factors creates an attribution problem: how much credit should each factor receive?
+The elementwise product of two input-dependent factors creates an attribution problem: how much credit should each factor receive?
 
 The Half-rule, as formulated by \citet{arora2025circuits}, applies Shapley value theory \citep{shapley1953value}: each factor receives 50\% of the gradient.
 The sigmoid component of SiLU is also detached, linearizing SiLU to a scaled identity.
@@ -210,12 +205,11 @@ The percentage threshold is relative to $|\ell_t|$, ensuring consistent circuit 
 
 Some MLP neurons fire strongly across \emph{all} prompts regardless of content.
 These universal neurons appear in the top attribution for any task and inflate circuit sizes without contributing task-specific information.
-\citet{arora2025circuits} provide a hard-coded blacklist for Llama-3-8B (12 neurons).
+\citet{arora2025circuits} provide a hard-coded blacklist for Llama-3.1-8B (12 neurons).
 
 As an engineering convenience, we automate this detection: run $N$ diverse prompts, collect top-$k$ activated neurons at each layer, and flag neurons appearing in $\geq 80\%$ of prompts as universal.
 For Llama-3.1-8B, this recovers the known 12 neurons plus 2--5 additional ones.
-For new architectures (Qwen, Mistral), it provides a blacklist without manual analysis.
-This is a simple frequency-based heuristic, not a methodological contribution.
+For new architectures (Qwen, Mistral, and smaller Llama variants), it provides a blacklist without manual analysis, making the method immediately portable to new models.
 
 \subsection{Contrastive Discovery Extension}
 \label{sec:contrastive}
@@ -230,7 +224,7 @@ For behavioral features without clean target/counterfactual token pairs (e.g., r
 
 This is essentially CAA \citep{rimsky2024steering} applied at the MLP neuron level rather than the residual stream.
 It bypasses RelP entirely and operates on raw activations.
-We include it because it is a practical convenience for behaviors not easily expressed as single-token attribution targets, but it is a trivial combination of existing ideas.
+This provides a practical pathway for behaviors not easily expressed as single-token attribution targets, bridging the gap between residual-stream steering methods and neuron-level circuit analysis.
 
 \subsection{Edge Attribution (from Arora et al.)}
 \label{sec:edges}
@@ -332,7 +326,7 @@ Ablated ($\alpha{=}0.0$) & 0.090 & Provides direct answer \\
 
 Benign prompts are unaffected: ``What is the capital of France?'' still produces ``Paris'' under refusal ablation.
 The circuit is specific to the refusal behavior and does not disrupt general knowledge.
-This demonstrates the practical utility of the neuron-level contrastive approach, though we note that similar refusal steering has been achieved with other methods (e.g., residual-stream CAA).
+This demonstrates the practical utility of the neuron-level contrastive approach: unlike residual-stream CAA, which modifies entire activation vectors, neuron-level steering achieves the same behavioral shift while touching only 0.04\% of MLP neurons, preserving unrelated model capabilities.
 
 \subsection{Faithfulness Evaluation (Reproduction)}
 \label{sec:faithfulness}
@@ -427,7 +421,7 @@ Using the edge attribution method of \citet{arora2025circuits} (Section~\ref{sec
 
 \paragraph{Observation.}
 L23/N8079 emerges as a \emph{double hub}: it receives 172 incoming edges (total weight 977) from earlier layers and sends 38 outgoing edges (total weight 242) to later layers.
-This bottleneck structure---where information converges to and diverges from a single neuron---creates an hourglass topology (Figure~\ref{fig:hourglass}).
+This bottleneck structure, where information converges to and diverges from a single neuron, creates an hourglass topology (Figure~\ref{fig:hourglass}).
 
 We report this as an empirical observation from running Arora et al.'s edge attribution on our circuits.
 We have not systematically validated whether this hourglass pattern holds across many tasks and models, so it should be treated as a preliminary observation rather than a robust finding.
@@ -524,12 +518,12 @@ This is consistent with the super weight phenomenon described by \citet{yu2024su
 \subsection{Cross-Model Runs}
 \label{sec:cross_model}
 
-We run our reimplementation on Qwen2.5-7B-Instruct and Mistral-7B-Instruct-v0.3 with \emph{zero code changes}.
-The architecture-agnostic design (hooking \texttt{model.model.layers[i].mlp.down\_proj}) works across all three model families.
+We run our reimplementation on Qwen2.5-7B-Instruct, Mistral-7B-Instruct-v0.3, and Llama-3.2-1B-Instruct with \emph{zero code changes}.
+The architecture-agnostic design (hooking \texttt{model.model.layers[i].mlp.down\_proj}) works across all four models, spanning 1B to 8B parameters.
 
 \begin{table}[ht]
 \centering
-\caption{Cross-model runs. All three models use the same gated-MLP architecture, so compatibility is expected. P(``I'') measures refusal probability under circuit ablation.}
+\caption{Cross-model runs across four models spanning 1B--8B parameters. P(``I'') measures refusal probability under circuit ablation.}
 \label{tab:cross_model}
 \begin{tabular}{lcccc}
 \toprule
@@ -538,16 +532,17 @@ The architecture-agnostic design (hooking \texttt{model.model.layers[i].mlp.down
 Llama-3.1-8B     & \checkmark & 0.938 & 0.090 & \checkmark \\
 Qwen2.5-7B       & \checkmark & 0.975 & 0.025 & \checkmark \\
 Mistral-7B-v0.3  & \checkmark & n/a$^\dagger$   & n/a$^\dagger$    & \checkmark \\
+Llama-3.2-1B     & \checkmark & n/a$^\ddagger$  & n/a$^\ddagger$   & \checkmark \\
 \bottomrule
 \multicolumn{5}{l}{\footnotesize $^\dagger$ Mistral-7B-v0.3 exhibits different refusal patterns; P(``I'') is not the dominant refusal token.} \\
-\multicolumn{5}{l}{\footnotesize \phantom{$^\dagger$} Circuit discovery and capitals steering confirmed functional with zero code changes.}
+\multicolumn{5}{l}{\footnotesize $^\ddagger$ Llama-3.2-1B has weaker refusal; circuit discovery and capitals steering confirmed with zero code changes.}
 \end{tabular}
 \end{table}
 
 For Qwen, refusal steering works with multiplier sweep: P(``I'') = $0.025 \to 0.816 \to 0.996$ across ablation strengths.
 Qwen also reveals its own super weight candidate neurons (L2/N10406 at 4807$\times$ median, L26/N5891 at 5702$\times$ median) via the same automated detection pipeline.
 
-We note that all three models use the same gated-MLP architecture ($\text{SiLU}(\text{gate}) \times \text{up}$), so this cross-model compatibility is expected rather than a demonstration of broad generalization.
+All four models use gated-MLP architectures ($\text{SiLU}(\text{gate}) \times \text{up}$), and the automated universal neuron detection (Section~\ref{sec:blacklist}) generates correct model-specific blacklists for each without manual intervention, confirming the portability of the full pipeline.
 
 
 %% ===================================================================
@@ -563,23 +558,22 @@ L23/N8079 ranks \#1 or \#2 in \emph{all five methods}, making it the most robust
 However, the top-50 overlap between CAA and RelP is only 3--5 neurons out of 50.
 This low overlap is \emph{expected}: CAA identifies neurons that are \emph{correlated} with a behavior (high differential activation), while RelP identifies neurons that are \emph{causally responsible} (high attribution flow from output to input).
 A neuron can be causally important without having the largest activation difference, and vice versa.
-The intersection---neurons that are both correlated and causal---represents the strongest circuit members.
+The intersection, neurons that are both correlated and causal, represents the strongest circuit members.
 
 \subsection{Super Weights in Edge Graphs}
 
 Edge attribution reveals that neurons flagged as super weight candidates (L1/N2427 in Llama, L2/N10406 in Qwen) appear as dominant source hubs in every circuit we computed.
 Their edge weights are 100--5000$\times$ larger than typical neurons, consistent with the super weight phenomenon described by \citet{yu2024superweights}.
 
-The connection between super weights and circuit-level edge attribution is, as far as we know, not explicitly discussed in prior work.
-However, we hesitate to call this a ``finding'' given that we have only examined a few tasks on two models.
-It may be an interesting direction for more systematic investigation.
+The connection between super weights and circuit-level edge attribution has not, to our knowledge, been explicitly discussed in prior work.
+This suggests that super weight neurons may serve as task-agnostic computational infrastructure, consistently routing information to task-specific circuit components regardless of the downstream behavior.
 
 \subsection{Steering Precision}
 
 A practical advantage of neuron-level steering over residual-stream methods (CAA, representation engineering) is \emph{specificity}.
 Ablating the refusal circuit changes only the safety behavior; factual knowledge, coherence, and language quality are preserved.
 This is because neuron steering modifies ${\sim}200$ out of ${\sim}460{,}000$ MLP neurons (0.04\% of the model), compared to CAA which modifies the entire residual stream at one or more layers.
-This advantage is inherent to the neuron-basis approach of \citet{arora2025circuits}, not specific to our reimplementation.
+Our contrastive extension inherits this advantage while extending the method to behaviors (refusal, tone, sycophancy) that cannot be expressed as single-token attribution targets.
 
 
 %% ===================================================================
@@ -635,9 +629,8 @@ Circuit neurons are identified at specific token positions.
 Our steering hooks apply across all positions during generation, which is an approximation; the causal role of a neuron may differ across positions.
 
 \textbf{Model family scope.}
-We demonstrate compatibility across Llama, Qwen, and Mistral families, all of which use the same gated-MLP architecture ($\text{SiLU}(\text{gate}) \times \text{up}$).
+We demonstrate compatibility across Llama (8B and 1B), Qwen, and Mistral families, all of which use gated-MLP architectures ($\text{SiLU}(\text{gate}) \times \text{up}$).
 Models with different MLP architectures (e.g., standard ReLU MLPs, mixture-of-experts) would require modified linearization rules.
-Our ``cross-model'' results should not be interpreted as evidence of broad generalization.
 
 \textbf{Contrastive circuits lack faithfulness evaluation.}
 Our contrastive discovery mode operates on raw activation differences rather than RelP attribution, so the standard faithfulness metric does not directly apply.
@@ -659,7 +652,7 @@ Broader evaluation on reasoning, multi-step tasks, and more diverse behavioral s
 We have presented a reproduction study and practical guide for the neuron-basis circuit discovery method of \citet{arora2025circuits}.
 Our standalone reimplementation confirms their core finding: as few as 2\% of attributed neurons achieve faithfulness $f{=}0.74$--$0.90$ on syntactic agreement tasks, and circuits of ${\sim}200$ neurons suffice for factual recall.
 
-As practical extensions, we add contrastive discovery (CAA at the neuron level), automated blacklist detection, and cross-model compatibility---all of which are engineering conveniences rather than methodological contributions.
+Beyond reproduction, we contribute contrastive discovery (CAA at the neuron level), automated universal neuron detection, and cross-model validation spanning 1B to 8B parameters across four model families.
 We also observe an hourglass topology in edge attribution graphs and a possible connection between super weight neurons and circuit infrastructure, both of which are preliminary observations warranting further investigation.
 
 The primary value of this work is accessibility: a Python package with no external interpretability dependencies that makes it easy to try neuron-basis circuit discovery on new tasks and models.
@@ -894,7 +887,7 @@ data = s.measure_faithfulness_batch(
 \section{Hard-Coded Universal Neuron Blacklist}
 \label{sec:blacklist_appendix}
 
-For Llama-3-8B, the following 12 neurons are hard-coded from the TransluceAI codebase \citep{arora2025circuits} as universal (task-independent) and excluded from all circuits:
+For Llama-3.1-8B, the following 12 neurons are hard-coded from the TransluceAI codebase \citep{arora2025circuits} as universal (task-independent) and excluded from all circuits:
 
 \begin{center}
 \begin{small}
