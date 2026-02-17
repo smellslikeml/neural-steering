@@ -35,13 +35,13 @@
 \maketitle
 
 \begin{abstract}
-We present a practical, standalone toolkit for discovering and steering neuron-level circuits in large language models.
-Building on Relevance Propagation (RelP) attribution in the neuron basis, we show that \emph{as few as 100--200 MLP neurons} form complete, faithful circuits for diverse tasks.
+We present a standalone toolkit for discovering and steering neuron-level circuits in large language models.
+Building on Relevance Propagation (RelP) attribution in the neuron basis, we show that \emph{as few as 100--200 MLP neurons} form complete, faithful circuits for factual recall, syntactic agreement, and safety refusal.
 Our toolkit requires only PyTorch and Hugging Face Transformers---no sparse autoencoder training, no control vector computation, no gradient integration.
 A single forward-backward pass identifies the causal circuit; modifying those neurons' activations at inference steers model behavior without disrupting unrelated capabilities.
-We demonstrate: (1)~factual recall circuits where ablating the top neuron eliminates the correct answer on held-out prompts, (2)~contrastive refusal circuits where zeroing ${\sim}200$ neurons converts safety refusal to full compliance while leaving benign prompts unchanged, (3)~faithfulness curves matching the reference implementation with 2\% of neurons achieving $f{=}0.74$ (simple) and $f{=}0.90$ (nounpp) on subject-verb agreement, (4)~edge attribution revealing an hourglass architecture in which a single neuron serves as both major source hub and target hub, and (5)~zero-code cross-model generalization to Qwen2.5-7B and Mistral-7B.
+We demonstrate: (1)~factual recall circuits where ablating the top neuron eliminates the correct answer on held-out prompts, (2)~contrastive refusal circuits where zeroing ${\sim}200$ neurons converts safety refusal to full compliance while leaving benign prompts unchanged, (3)~faithfulness curves matching the reference implementation with 2\% of neurons achieving $f{=}0.74$ (simple) and $f{=}0.90$ (nounpp) on subject-verb agreement, (4)~edge attribution revealing an hourglass architecture in which a single neuron serves as both major source hub and target hub, (5)~zero-code cross-model generalization to Qwen2.5-7B and Mistral-7B, and (6)~a pre-registered test of ICL--steering circuit independence across 8 behavioral domains, finding structural separation (zero neuron overlap, complete layer separation) but no causal ICL circuit---a negative result indicating that MLP-based circuit discovery does not capture the ICL mechanism in this setting.
 We also connect neuron circuits to super weight neurons via edge attribution, finding that anomalously large weight magnitudes in early layers act as universal infrastructure neurons detectable across tasks and models.
-Our toolkit and all experiments are released as a single-file Python module.
+Our toolkit and all experiments are released as a lightweight Python package.
 \end{abstract}
 
 
@@ -62,11 +62,11 @@ Recent work by \citet{arora2025circuits} demonstrates an alternative: circuits a
 Using Relevance Propagation (RelP) \citep{achtibat2024relp, bach2015pixel} with three linearization rules adapted for transformer MLP blocks, they show that roughly 100--200 MLP neurons suffice to explain model behavior on factual recall and syntactic agreement tasks.
 Independently, \citet{jafari2025relp} show that RelP achieves 0.956 Pearson correlation with activation patching on GPT-2 circuit discovery benchmarks, validating the approach at a fraction of the computational cost of exhaustive patching.
 
-In this paper, we build on this foundation and present a \emph{practical, standalone toolkit} for neuron-level circuit discovery and steering.
+In this paper, we present a standalone toolkit for neuron-level circuit discovery and steering.
 Our contributions are:
 
 \begin{enumerate}
-    \item \textbf{A dependency-light toolkit.} A single-file Python module (\texttt{neuron\_steer.py}) implementing RelP attribution, circuit selection, neuron-level steering, contrastive discovery, edge attribution, and faithfulness evaluation. No SAE training, no external interpretability libraries.
+    \item \textbf{A dependency-light toolkit.} A Python package (\texttt{neuron\_steer}) implementing RelP attribution, circuit selection, neuron-level steering, contrastive discovery, edge attribution, and faithfulness evaluation. No SAE training, no external interpretability libraries.
 
     \item \textbf{Contrastive circuit discovery.} A method for finding behavior-specific neuron circuits (e.g., refusal, tone, style) by contrasting MLP activations between two prompt sets, enabling steering of high-level behaviors beyond factual recall.
 
@@ -318,7 +318,7 @@ Ablated ($\alpha{=}0.0$) & 0.090 & Provides direct answer \\
 \end{tabular}
 \end{table}
 
-Critically, \emph{benign prompts are unaffected}: ``What is the capital of France?'' still produces ``Paris'' under refusal ablation.
+\emph{Benign prompts are unaffected}: ``What is the capital of France?'' still produces ``Paris'' under refusal ablation.
 The circuit is specific to the refusal behavior and does not disrupt general knowledge.
 
 \subsection{Faithfulness Evaluation}
@@ -531,6 +531,49 @@ For Qwen, refusal steering works with multiplier sweep: P(``I'') = $0.025 \to 0.
 Qwen also reveals its own super weight neurons (L2/N10406 at 4807$\times$ median, L26/N5891 at 5702$\times$ median) via the same automated detection pipeline.
 
 
+\subsection{ICL vs.\ Steering: Circuit Independence Test}
+\label{sec:icl_steering}
+
+\paragraph{Motivation.}
+If in-context learning (ICL) and activation steering operate through independent substrates, their behavioral effects should combine additively and their circuits should be non-overlapping.
+We designed a pre-registered experiment to test this mechanistically across 8 persona-based behavioral domains (pessimism, sycophancy, skepticism, dark triad, moral nihilism, overconfidence, risk tolerance, conspiracy).
+
+\paragraph{Setup.}
+For each persona, we measure log-odds of the persona-direction response across an ICL sweep ($N = 0$ to $64$ examples) and a CAA steering sweep ($m = -3$ to $3$).
+We fit a Bayesian behavioral model:
+$\text{LO} = a \cdot m + b + \gamma \cdot N^{1-\alpha}$
+and test for an interaction term $\delta \cdot m \cdot N^{1-\alpha}$.
+A persona passes the behavioral gate (GO) if: $R^2 > 0.85$ on held-out data, the Bayesian model outperforms linear ($\Delta\text{AIC} > 4$), and the interaction is non-significant (permutation test, 500 permutations, Bonferroni-corrected $\alpha = 0.05/8$).
+For GO personas, we discover ICL circuits (top-200 neurons by $|t|$-statistic of coherent vs.\ frequency-matched ICL contrast) and CAA steering circuits independently, then measure overlap and cross-ablation.
+
+\paragraph{Behavioral results.}
+On Llama-3.1-8B, 1/8 personas (pessimism) passes the behavioral gate ($R^2 = 0.879$, $\Delta\text{AIC} = 182.8$, perm $p = 0.018 > 0.00625$ after Bonferroni).
+The remaining 7 fail: 4 due to $R^2 < 0.85$, 2 due to significant interaction, 1 due to insufficient $\Delta\text{AIC}$.
+On Qwen2.5-7B, 0/8 pass; all fail on $R^2 < 0.85$.
+The behavioral model replicates for at most 1 of 8 persona domains tested.
+
+\paragraph{Circuit overlap.}
+For pessimism, the top-200 ICL and CAA circuits share zero neurons (Jaccard $= 0.000$ at $k = 50, 100, 200$).
+Layer distributions are perfectly separated (KS $D = 1.0$, $p < 10^{-100}$): ICL neurons concentrate in layers 2--11 (140/200 in layer~2), while CAA neurons concentrate in layers 29--31.
+
+\paragraph{Cross-ablation reveals single dissociation.}
+Ablating the top-50 steering neurons shifts steering log-odds by $+6.99$ ($z = 110$ vs.\ layer-matched random controls).
+Ablating the top-50 ICL neurons shifts ICL log-odds by only $-0.064$ ($z = -0.8$, not significant), accounting for 1.0\% of the total ICL behavioral effect.
+This is a single dissociation, not the double dissociation that full functional independence would predict.
+
+\paragraph{ICL injection fails.}
+Injecting the top-200 ICL neuron activation offsets at $1\times$ scale shifts log-odds by $+0.22$---in the wrong direction.
+The 200 neurons split 108 positive / 92 negative, producing near-complete sign cancellation.
+The ICL circuit identified via frequency-matched contrast is not sufficient for the ICL effect.
+
+\paragraph{Interpretation.}
+The structural separation is real: zero neuron overlap, complete layer separation, additive behavioral composition (2.5\% residual).
+But the ICL neurons we identify are not the causal mechanism of ICL.
+The concentration of ``ICL circuit'' neurons in layer~2 (where they likely detect surface-level topic differences between persona questions and factual control questions, rather than abstract belief content) and their causal inertness under ablation both suggest that MLP neurons are not the primary substrate for ICL in this setting.
+This is consistent with work identifying attention heads as the dominant ICL mechanism in models of this scale.
+Future work should use same-domain contrasts (e.g., coherent vs.\ label-permuted ICL) to better isolate the causal ICL circuit in MLP neurons, if one exists.
+
+
 %% ===================================================================
 \section{Analysis}
 \label{sec:analysis}
@@ -541,7 +584,7 @@ Qwen also reveals its own super weight neurons (L2/N10406 at 4807$\times$ median
 We compare five attribution methods on the capitals task: single-prompt RelP, multi-prompt RelP, residual-stream CAA, MLP-only CAA, and activation-weighted CAA.
 L23/N8079 ranks \#1 or \#2 in \emph{all five methods}, making it the most robustly identified circuit neuron.
 
-However, the top-50 overlap between CAA and RelP is only 3--5 neurons out of 50.
+The top-50 overlap between CAA and RelP is only 3--5 neurons out of 50.
 This low overlap is \emph{expected}: CAA identifies neurons that are \emph{correlated} with a behavior (high differential activation), while RelP identifies neurons that are \emph{causally responsible} (high attribution flow from output to input).
 A neuron can be causally important without having the largest activation difference, and vice versa.
 The intersection---neurons that are both correlated and causal---represents the strongest circuit members.
@@ -556,7 +599,7 @@ Our blacklisting procedure automatically detects and excludes them, preventing i
 
 \subsection{Steering Precision}
 
-A key advantage of neuron-level steering over residual-stream methods (CAA, representation engineering) is \emph{specificity}.
+An advantage of neuron-level steering over residual-stream methods (CAA, representation engineering) is \emph{specificity}.
 Ablating the refusal circuit changes only the safety behavior; factual knowledge, coherence, and language quality are preserved.
 This is because neuron steering modifies ${\sim}200$ out of ${\sim}460{,}000$ MLP neurons (0.04\% of the model), compared to CAA which modifies the entire residual stream at one or more layers.
 
@@ -618,7 +661,13 @@ We verified correctness against the RelP formulation; exact reproduction of Tran
 
 \textbf{Evaluation scope.}
 Our faithfulness evaluation focuses on SVA and factual recall.
-Broader evaluation on reasoning, multi-step tasks, and more diverse behavioral steering would strengthen the claims.
+We have not evaluated on reasoning tasks, multi-step behaviors, or diverse behavioral steering beyond the tasks reported here.
+
+\textbf{ICL circuit discovery.}
+Our ICL--steering independence test (Section~\ref{sec:icl_steering}) identifies ``ICL circuits'' via frequency-matched contrast, which differs in both topic domain and label structure from the coherent ICL condition.
+The identified neurons may reflect surface-level input statistics (topic detection) rather than the abstract belief-update mechanism.
+A same-domain contrast (coherent vs.\ label-permuted) would provide a cleaner control.
+The 500-permutation test is also underpowered for the Bonferroni-corrected threshold ($\alpha = 0.00625$), and the sole GO persona (pessimism) depends on this correction for its passing status.
 
 
 %% ===================================================================
@@ -626,18 +675,19 @@ Broader evaluation on reasoning, multi-step tasks, and more diverse behavioral s
 \label{sec:conclusion}
 %% ===================================================================
 
-We have presented a practical toolkit for neuron-level circuit discovery and steering in large language models.
-By implementing the three LRP rules (LN-rule, AH-rule, Half-rule) in a single-file Python module, we make it possible to discover faithful circuits in a single forward-backward pass, steer model behavior by modifying ${\sim}200$ neurons (0.04\% of the model), and trace neuron-to-neuron information flow---all with zero external interpretability dependencies.
+We have presented a toolkit for neuron-level circuit discovery and steering in large language models.
+By implementing the three LRP rules (LN-rule, AH-rule, Half-rule) in a lightweight Python package, we make it possible to discover faithful circuits in a single forward-backward pass, steer model behavior by modifying ${\sim}200$ neurons (0.04\% of the model), and trace neuron-to-neuron information flow---all with zero external interpretability dependencies.
 
 Our key findings are:
 (1) As few as 2\% of attributed neurons achieve faithfulness $f{=}0.74$--$0.90$ on syntactic agreement tasks (varying by task complexity).
 (2) Contrastive circuit discovery identifies ${\sim}200$ neurons responsible for safety refusal, and their ablation converts refusal to compliance while preserving benign behavior.
 (3) Edge attribution reveals an hourglass architecture with bottleneck neurons serving as information routing hubs.
-(4) Super weight neurons are detectable as universal infrastructure via edge attribution, providing what is, to our knowledge, the first connection between super weights and mechanistic circuit analysis.
+(4) Super weight neurons are detectable as universal infrastructure via edge attribution, providing the first connection between super weights and mechanistic circuit analysis.
 (5) The entire approach generalizes across model families with zero code changes.
+(6) A pre-registered ICL--steering independence test across 8 behavioral domains yields a negative result: while ICL-attributed and steering neurons occupy completely different layers (zero overlap, KS $D{=}1.0$), the identified ICL circuit is not causally effective ($z < 2$ under ablation, injection shifts log-odds in the wrong direction).
+This suggests that MLP-based circuit discovery does not capture the ICL mechanism, and that structural circuit separation does not imply functional dissociation.
 
-Neuron-basis circuit analysis represents a practical middle ground between expensive SAE-based methods and coarse residual-stream interventions.
-We release our toolkit to enable broader adoption of mechanistic interpretability in both research and safety applications.
+We release our toolkit as a Python package.
 
 
 \bibliography{references}
@@ -651,11 +701,11 @@ We release our toolkit to enable broader adoption of mechanistic interpretabilit
 \label{sec:api}
 %% ===================================================================
 
-The toolkit is distributed as a single Python file \texttt{neuron\_steer.py} with no dependencies beyond PyTorch and Hugging Face Transformers.
+The toolkit is distributed as a Python package \texttt{neuron\_steer} with no dependencies beyond PyTorch and Hugging Face Transformers.
 The primary interface is the \texttt{NeuronSteerer} class:
 
 \begin{verbatim}
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
 # Initialize (auto-detects universal neurons)
 s = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")

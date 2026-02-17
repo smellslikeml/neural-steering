@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neural Steering</title>
-<meta name="description" content="Attribute and steer the ~200 MLP neurons that form a language model's circuit for any given behavior. A practical toolkit based on RelP attribution.">
-<meta property="og:title" content="Neural Steering: Practical Circuit Discovery and Control in Language Models">
+<meta name="description" content="Attribute and steer the ~200 MLP neurons that form a language model's circuit for any given behavior. Single-file toolkit based on RelP attribution.">
+<meta property="og:title" content="Neural Steering: Circuit Discovery and Control in Language Models">
 <meta property="og:description" content="Attribute and steer the ~200 MLP neurons that form a language model's circuit for any given behavior.">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Neural Steering">
-<meta name="twitter:description" content="Practical neuron circuit discovery and steering in language models.">
+<meta name="twitter:description" content="Neuron circuit discovery and steering in language models.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ========== CSS Reset & Base ========== */
@@ -457,7 +457,7 @@ footer a { color: var(--accent); }
     <div class="stat-card"><span class="num">1</span><span class="label">Backward pass</span></div>
   </div>
 
-  <p>Finding them takes a <strong>single forward + backward pass</strong> through a modified model&mdash;linearize a few nonlinearities in the backward pass, and the gradients tell you which neurons matter.</p>
+  <p>Finding them takes a <strong>single forward + backward pass</strong> through a modified model. Linearize a few nonlinearities in the backward pass, and the gradients tell you which neurons matter.</p>
 
   <div class="callout">
     The backward pass already tells you which neurons matter. The nonlinearities just obscure the signal&mdash;linearize them and the gradients become clean attribution scores.
@@ -491,11 +491,11 @@ footer a { color: var(--accent); }
       <g transform="translate(0, 115)">
         <rect x="20" y="10" width="660" height="85" rx="8" fill="none" stroke="#2a2a3a" stroke-width="1"/>
         <text x="40" y="38" fill="#61afef" font-family="Inter" font-size="12" font-weight="600">Rule 2: AH-Rule (Attention)</text>
-        <text x="40" y="60" fill="#9a9a9a" font-family="Inter" font-size="11">Force eager attention (no Flash/SDPA) so gradients flow through Q, K, V, O.</text>
-        <text x="40" y="78" fill="#6a6a6a" font-family="JetBrains Mono" font-size="10">config._attn_implementation = "eager"  \u2192  full autograd through attention</text>
+        <text x="40" y="60" fill="#9a9a9a" font-family="Inter" font-size="11">Zero gradient through Q/K projections. Gradient flows only through V\u2192O path.</text>
+        <text x="40" y="78" fill="#6a6a6a" font-family="JetBrains Mono" font-size="10">grad(Q) = 0, grad(K) = 0  \u2192  attribution only via V\u2192O projection</text>
         <g transform="translate(560, 30)">
           <rect x="0" y="0" width="100" height="28" rx="14" fill="none" stroke="#61afef" stroke-width="1.5"/>
-          <text x="50" y="18" fill="#61afef" font-family="Inter" font-size="10" font-weight="500" text-anchor="middle">Full Flow \u2192</text>
+          <text x="50" y="18" fill="#61afef" font-family="Inter" font-size="10" font-weight="500" text-anchor="middle">V\u2192O Only</text>
         </g>
       </g>
 
@@ -520,7 +520,7 @@ footer a { color: var(--accent); }
 
   <p>Pick the top ~200 neurons by attribution magnitude. That's your circuit. The whole thing takes <strong>under a second</strong> on a single GPU.</p>
 
-  <pre><code><span class="kw">from</span> neuron_steer <span class="kw">import</span> <span class="fn">NeuronSteerer</span>
+  <pre><code><span class="kw">from</span> neuron_steer.core <span class="kw">import</span> <span class="fn">NeuronSteerer</span>
 
 steerer = <span class="fn">NeuronSteerer</span>(<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>)
 
@@ -537,7 +537,7 @@ circuit = steerer.<span class="fn">find_feature</span>(
 <section id="sec-steering">
   <h2><span class="section-num">03</span>Steering: Turn the Knobs</h2>
 
-  <p>Once you've found the circuit, steering is dead simple. Hook into the model's MLP layers and <strong>multiply the neuron activations</strong> by a scalar:</p>
+  <p>Once you've found the circuit, steering is one line of code. Hook into the model's MLP layers and <strong>multiply the neuron activations</strong> by a scalar:</p>
 
   <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
     <div class="stat-card" style="border-color: var(--red);">
@@ -636,7 +636,7 @@ output = steerer.<span class="fn">steer</span>(
     </div>
   </div>
 
-  <p>Benign prompts are <strong>completely unaffected</strong>. Ask &ldquo;What is the capital of France?&rdquo; and it still says Paris. The refusal circuit is orthogonal to factual knowledge.</p>
+  <p>Benign prompts are <strong>unaffected</strong>. Ask &ldquo;What is the capital of France?&rdquo; and it still says Paris. The refusal circuit is orthogonal to factual knowledge.</p>
 
   <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
     <div class="stat-card"><span class="num">0.09</span><span class="label">P("I") after ablation</span></div>
@@ -685,24 +685,7 @@ output = steerer.<span class="fn">steer</span>(
 
   <p>We've validated factual recall, safety refusal, and subject-verb agreement. The contrastive discovery method works with any two sets of prompts&mdash;if you can write 10 prompts where the model does a thing and 10 where it doesn't, you can find the circuit.</p>
 
-  <p>Directions we haven't tested yet but expect to work:</p>
-
-  <div class="experiment-card">
-    <h4>Tone and formality</h4>
-    <p>Contrastive prompts: formal writing vs. casual. Same mechanism&mdash;find the neurons that differ, scale them.</p>
-  </div>
-
-  <div class="experiment-card">
-    <h4>Sycophancy</h4>
-    <p>The model agrees with users even when they're wrong. Contrastive prompts where the model agrees vs. disagrees with incorrect claims should surface the relevant neurons.</p>
-  </div>
-
-  <div class="experiment-card">
-    <h4>Verbosity</h4>
-    <p>Short vs. long responses to the same question. If neurons control response length, ablating them might produce terser output.</p>
-  </div>
-
-  <p>These are hypothetical&mdash;listed because the toolkit makes each one a few minutes of work to try.</p>
+  <p>We haven't tested tone, sycophancy, or verbosity yet. The contrastive method should generalize to any behavior where you can write contrasting prompt sets, but we don't have results to show. Each circuit takes about a minute to discover, so testing new features is cheap.</p>
 </section>
 <!-- ==================== WORKS EVERYWHERE ==================== -->
 <section id="sec-universal">
@@ -730,13 +713,36 @@ steerer = <span class="fn">NeuronSteerer</span>(<span class="str">"mistralai/Mis
   <p>Qwen2.5-7B refusal steering: <code>P("I")</code> shifts from <strong>0.025</strong> to <strong>0.996</strong> across multiplier values. Same toolkit, same API call. The mechanism is the same everywhere; only the neuron addresses are different.</p>
 </section>
 
+<!-- ==================== ICL INDEPENDENCE ==================== -->
+<section id="sec-icl">
+  <h2><span class="section-num">09</span>Do ICL and Steering Share Circuits?</h2>
+
+  <p>We tested whether in-context learning (ICL) and neuron steering use the same neurons. If they do, you'd expect overlapping circuits and cross-interference when you ablate one to affect the other.</p>
+
+  <p>They don't overlap. At all.</p>
+
+  <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="stat-card"><span class="num">0.000</span><span class="label">Jaccard overlap</span></div>
+    <div class="stat-card"><span class="num">1.0</span><span class="label">KS distance</span></div>
+    <div class="stat-card"><span class="num">1/8</span><span class="label">Personas pass</span></div>
+  </div>
+
+  <p>ICL neurons cluster in early layers (L7&ndash;L15). Steering neurons cluster in late layers (L22&ndash;L27). Zero shared neurons in the top 200. The layer distributions are perfectly separated (KS D = 1.0, p &lt; 10<sup>-100</sup>).</p>
+
+  <p>But ablating the ICL circuit barely affects ICL behavior (z = -0.8, not significant). Injecting ICL neuron activations shifts log-odds in the wrong direction. The neurons we find via frequency-matched contrast are likely topic-detection features, not the causal mechanism of ICL.</p>
+
+  <div class="callout">
+    <strong>Honest negative result.</strong> The structural separation between ICL and steering circuits is real, but our ICL circuit discovery method doesn't find causally effective neurons. Finding the actual ICL mechanism in the neuron basis remains open.
+  </div>
+</section>
+
 <!-- ==================== TRY IT ==================== -->
 <section id="sec-try">
-  <h2><span class="section-num">09</span>Try It Yourself</h2>
+  <h2><span class="section-num">10</span>Try It Yourself</h2>
 
   <p>The code is on GitHub:</p>
 
-  <pre><code><span class="kw">from</span> neuron_steer <span class="kw">import</span> <span class="fn">NeuronSteerer</span>
+  <pre><code><span class="kw">from</span> neuron_steer.core <span class="kw">import</span> <span class="fn">NeuronSteerer</span>
 
 <span class="cm"># Load any Llama-family model</span>
 steerer = <span class="fn">NeuronSteerer</span>(<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>)
@@ -770,7 +776,7 @@ steerer.<span class="fn">interactive</span>()  <span class="cm"># launches REPL<
   </div>
 
   <div class="callout">
-    We've only tested a handful of features so far. There's no reason this shouldn't work for anything the model does&mdash;political bias, coding style, verbosity, sycophancy. Each circuit takes about a second to find.
+    We've tested factual recall, safety refusal, and subject-verb agreement. The contrastive method should extend to other behaviors (political bias, coding style, verbosity), but we haven't validated those yet.
   </div>
 </section>
 
@@ -779,7 +785,7 @@ steerer.<span class="fn">interactive</span>()  <span class="cm"># launches REPL<
 <footer>
   <div class="container">
     <p>Built with neuron-level interpretability. Based on <a href="https://arxiv.org/abs/2601.22594" target="_blank">&ldquo;Language Model Circuits Are Sparse in the Neuron Basis&rdquo;</a> (TransluceAI, 2025).</p>
-    <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">Toolkit: <code>neuron_steer.py</code> &bull; Validated on Llama, Qwen, Mistral</p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">Toolkit: <code>neuron_steer</code> &bull; Validated on Llama, Qwen, Mistral</p>
   </div>
 </footer>
 
