@@ -4,7 +4,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{natbib}
-\usepackage{hyperref}
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsfonts}
@@ -22,6 +21,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{shapes,arrows,positioning,calc}
+\usepackage{hyperref}
 
 \title{Reproducing and Extending Neuron-Basis Circuit Discovery: \\ A Practical Guide}
 
@@ -130,8 +130,8 @@ The LN-rule treats the normalization coefficient $c = w \cdot \text{rsqrt}(\text
 This preserves the per-token scaling (unlike a pure identity rule) while eliminating the non-linear interaction between input magnitude and gradient:
 
 \begin{equation}
-    \textsc{Forward:} \quad y = x \cdot c, \qquad
-    \textsc{Backward:} \quad \nabla_x = \nabla_y \cdot \text{sg}(c)
+    \text{Forward:} \quad y = x \cdot c, \qquad
+    \text{Backward:} \quad \nabla_x = \nabla_y \cdot \text{sg}(c)
 \label{eq:ln_rule}
 \end{equation}
 
@@ -159,7 +159,7 @@ Formally, with $g = \text{gate}(x)$ and $u = \text{up}(x)$:
 
 \begin{align}
     \hat{g} &= g \cdot \text{sg}(\sigma(g))  && \text{(linearized SiLU)} \\
-    h &= \textsc{HalfRule}(\hat{g}, u) && \text{(Shapley multiply)}
+    h &= \text{HalfRule}(\hat{g}, u) && \text{(Shapley multiply)}
 \end{align}
 
 where the custom autograd function distributes gradients:
@@ -280,7 +280,7 @@ Selection: top-$k = 200$ neurons.
 \paragraph{Results.}
 The top-attributed neuron is L23/N8079 with attribution $+5.53$, consistently ranking \#1 or \#2 across single-prompt, multi-prompt, and all five attribution methods tested (single-prompt RelP, multi-prompt RelP, residual CAA, MLP-only CAA, activation-weighted CAA).
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Capitals task: ablation (multiplier $\alpha{=}0.0$) and amplification ($\alpha{=}2.0$). Results are consistent with the sparsity findings of \citet{arora2025circuits}.}
 \label{tab:capitals}
@@ -311,7 +311,7 @@ The resulting circuit captures the ``refusal direction'' in neuron space.
 The top refusal neurons are L26/N7711 (attribution $+4.25$) and L31/N11410 ($+3.52$).
 Ablation ($\alpha{=}0.0$) of ${\sim}200$ refusal neurons converts safety refusal to full compliance:
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Refusal steering results on Llama-3.1-8B-Instruct. P(``I'') measures the probability of the model's refusal-characteristic first token.}
 \label{tab:refusal}
@@ -347,7 +347,7 @@ Faithfulness measures whether the circuit suffices to reproduce model behavior; 
 \paragraph{Results.}
 Table~\ref{tab:faithfulness} shows faithfulness curves on the subject-verb agreement (SVA) benchmark, sweeping from 0\% to 100\% of attributed neurons.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Faithfulness ($f$) and completeness ($c$) at selected circuit sizes on SVA tasks. $n$ = approximate number of unique neurons in circuit (varies per prompt; values shown are typical). Mean ablation. These results reproduce the findings of \citet{arora2025circuits}.}
 \label{tab:faithfulness}
@@ -372,7 +372,7 @@ The faithfulness curves are \emph{monotonically increasing} from 0 to ${\approx}
 At 2\% threshold, SVA Simple reaches $f{=}0.74$ and Nounpp reaches $f{=}0.90$, confirming the extreme sparsity they report.
 By 5\%, faithfulness exceeds 0.85 for both tasks.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -427,7 +427,7 @@ This bottleneck structure---where information converges to and diverges from a s
 We report this as an empirical observation from running Arora et al.'s edge attribution on our circuits.
 We have not systematically validated whether this hourglass pattern holds across many tasks and models, so it should be treated as a preliminary observation rather than a robust finding.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{tikzpicture}[
     neuron/.style={circle, draw, minimum size=6mm, inner sep=0pt, font=\tiny},
@@ -499,7 +499,7 @@ We have not systematically validated whether this hourglass pattern holds across
 \label{fig:hourglass}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Hub analysis for the capitals circuit. Degree = number of edges.}
 \label{tab:hubs}
@@ -522,7 +522,7 @@ This is consistent with the super weight phenomenon described by \citet{yu2024su
 We run our reimplementation on Qwen2.5-7B-Instruct and Mistral-7B-Instruct-v0.3 with \emph{zero code changes}.
 The architecture-agnostic design (hooking \texttt{model.model.layers[i].mlp.down\_proj}) works across all three model families.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Cross-model runs. All three models use the same gated-MLP architecture, so compatibility is expected. P(``I'') measures refusal probability under circuit ablation.}
 \label{tab:cross_model}
@@ -751,7 +751,7 @@ Held-out evaluation uses Pittsburgh $\to$ Harrisburg, Houston $\to$ Austin, and 
 Refusal prompts are drawn from standard safety benchmarks.
 SVA prompts use the format from \citet{arora2025circuits}.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \caption{Training city--capital pairs for the factual recall task.}
 \label{tab:training_pairs}
