@@ -1,0 +1,174 @@
+\begin{thebibliography}{22}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Achtibat et~al.(2024)Achtibat, Hatefi, Dreyer, Jain, Wiegand,
+  Lapuschkin, and Samek]{achtibat2024relp}
+Reduan Achtibat, Sayed Mohammad~Vakilzadeh Hatefi, Maximilian Dreyer, Aakriti
+  Jain, Thomas Wiegand, Sebastian Lapuschkin, and Wojciech Samek.
+\newblock Attnlrp: Attention-aware layer-wise relevance propagation for
+  transformers.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning}, 2024.
+
+\bibitem[Arora et~al.(2026)Arora, Wu, Steinhardt, and
+  Schwettmann]{arora2025circuits}
+Aryaman Arora, Zhengxuan Wu, Jacob Steinhardt, and Sarah Schwettmann.
+\newblock Language model circuits are sparse in the neuron basis.
+\newblock \emph{arXiv preprint arXiv:2601.22594}, 2026.
+
+\bibitem[Bach et~al.(2015)Bach, Binder, Montavon, Klauschen, M{\"u}ller, and
+  Samek]{bach2015pixel}
+Sebastian Bach, Alexander Binder, Gr{\'e}goire Montavon, Frederick Klauschen,
+  Klaus-Robert M{\"u}ller, and Wojciech Samek.
+\newblock On pixel-wise explanations for non-linear classifier decisions by
+  layer-wise relevance propagation.
+\newblock \emph{PLoS ONE}, 10\penalty0 (7), 2015.
+
+\bibitem[Bricken et~al.(2023)Bricken, Templeton, Batson, Chen, Jermyn, Conerly,
+  Turner, Anil, Denison, Askell, Lasenby, Wu, Kravec, Schiefer, Maxwell,
+  Joseph, Hatfield-Dodds, Tamkin, Nguyen, McLean, Burke, Hume, Carter,
+  Henighan, and Olah]{bricken2023monosemanticity}
+Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom
+  Conerly, Nick Turner, Cem Anil, Carson Denison, Amanda Askell, Robert
+  Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas
+  Joseph, Zac Hatfield-Dodds, Alex Tamkin, Karina Nguyen, Brayden McLean,
+  Josiah~E Burke, Tristan Hume, Shan Carter, Tom Henighan, and Christopher
+  Olah.
+\newblock Towards monosemanticity: Decomposing language models with dictionary
+  learning.
+\newblock \emph{Transformer Circuits Thread}, 2023.
+
+\bibitem[Conmy et~al.(2023)Conmy, Mavor-Parker, Lynch, Heimersheim, and
+  Garriga-Alonso]{conmy2023acdc}
+Arthur Conmy, Augustine~N. Mavor-Parker, Aengus Lynch, Stefan Heimersheim, and
+  Adri{\`a} Garriga-Alonso.
+\newblock Towards automated circuit discovery for mechanistic interpretability.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\bibitem[Cunningham et~al.(2023)Cunningham, Ewart, Riggs, Huben, and
+  Sharkey]{cunningham2023sae}
+Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey.
+\newblock Sparse autoencoders find highly interpretable features in language
+  models.
+\newblock \emph{arXiv preprint arXiv:2309.08600}, 2023.
+
+\bibitem[Elhage et~al.(2022)Elhage, Hume, Olsson, Schiefer, Henighan, Kravec,
+  Hatfield-Dodds, Lasenby, Drain, Chen, et~al.]{elhage2022toy}
+Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan,
+  Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen,
+  et~al.
+\newblock Toy models of superposition.
+\newblock \emph{arXiv preprint arXiv:2209.10652}, 2022.
+
+\bibitem[Geiger et~al.(2024)Geiger, Wu, Potts, Icard, and
+  Goodman]{geiger2024interchange}
+Atticus Geiger, Zhengxuan Wu, Christopher Potts, Thomas Icard, and Noah
+  Goodman.
+\newblock Finding alignments between interpretable causal variables and
+  distributed neural representations.
+\newblock In \emph{Causal Learning and Reasoning}, 2024.
+
+\bibitem[Goldowsky-Dill et~al.(2023)Goldowsky-Dill, MacLeod, Sato, and
+  Arora]{goldowskydill2023localizing}
+Nicholas Goldowsky-Dill, Chris MacLeod, Lucas Sato, and Aryaman Arora.
+\newblock Localizing model behavior with path patching.
+\newblock \emph{arXiv preprint arXiv:2304.05969}, 2023.
+
+\bibitem[Grattafiori et~al.(2024)Grattafiori, Dubey, Jauhri, Pandey, Kadian,
+  et~al.]{dubey2024llama3}
+Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek
+  Kadian, et~al.
+\newblock The {Llama} 3 herd of models.
+\newblock \emph{arXiv preprint arXiv:2407.21783}, 2024.
+
+\bibitem[Jiang et~al.(2023)Jiang, Sablayrolles, Mensch, Bamford, Chaplot,
+  de~las Casas, Bressand, Lengyel, Lample, Saulnier, et~al.]{jiang2023mistral}
+Albert~Q. Jiang, Alexandre Sablayrolles, Arthur Mensch, Chris Bamford,
+  Devendra~Singh Chaplot, Diego de~las Casas, Florian Bressand, Gianna Lengyel,
+  Guillaume Lample, Lucile Saulnier, et~al.
+\newblock Mistral 7b.
+\newblock \emph{arXiv preprint arXiv:2310.06825}, 2023.
+
+\bibitem[Marks et~al.(2024)Marks, Rager, Michaud, Belinkov, Bau, and
+  Mueller]{marks2024sparse}
+Samuel Marks, Can Rager, Eric~J Michaud, Yonatan Belinkov, David Bau, and Aaron
+  Mueller.
+\newblock Sparse feature circuits: Discovering and editing interpretable causal
+  graphs in language models.
+\newblock \emph{arXiv preprint arXiv:2403.19647}, 2024.
+
+\bibitem[Mayne et~al.(2024)Mayne, Yang, and Mahdi]{mayne2024sae_steering}
+Harry Mayne, Yushi Yang, and Adam Mahdi.
+\newblock Can sparse autoencoders be used to decompose and interpret steering
+  vectors?
+\newblock \emph{arXiv preprint arXiv:2411.08790}, 2024.
+
+\bibitem[Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov]{meng2022rome}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in {GPT}.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem[Rezaei~Jafari et~al.(2025)Rezaei~Jafari, Eberle, Khakzar, and
+  Nanda]{jafari2025relp}
+Farnoush Rezaei~Jafari, Oliver Eberle, Ashkan Khakzar, and Neel Nanda.
+\newblock {RelP}: Faithful and efficient circuit discovery in language models
+  via relevance patching.
+\newblock \emph{arXiv preprint arXiv:2508.21258}, 2025.
+
+\bibitem[Rimsky et~al.(2024)Rimsky, Gabrieli, Schulz, Tong, Hubinger, and
+  Turner]{rimsky2024steering}
+Nina Rimsky, Nick Gabrieli, Julian Schulz, Meg Tong, Evan Hubinger, and
+  Alexander~Matt Turner.
+\newblock Steering {Llama} 2 via contrastive activation addition.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association
+  for Computational Linguistics}, 2024.
+
+\bibitem[Shapley(1953)]{shapley1953value}
+Lloyd~S. Shapley.
+\newblock A value for n-person games.
+\newblock \emph{Contributions to the Theory of Games}, 2:\penalty0 307--317,
+  1953.
+
+\bibitem[Templeton et~al.(2024)Templeton, Conerly, Marcus, Lindsey, Bricken,
+  Chen, Pearce, Citro, Ameisen, Jones, Cunningham, Turner, McDougall,
+  MacDiarmid, Freeman, Sumers, Rees, Batson, Jermyn, Carter, Olah, and
+  Henighan]{templeton2024scaling}
+Adly Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken,
+  Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy
+  Cunningham, Nicholas~L. Turner, Callum McDougall, Monte MacDiarmid, C.~Daniel
+  Freeman, Theodore~R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, Shan
+  Carter, Chris Olah, and Tom Henighan.
+\newblock Scaling monosemanticity: Extracting interpretable features from
+  {Claude} 3 {Sonnet}.
+\newblock \emph{Transformer Circuits Thread}, 2024.
+
+\bibitem[Wang et~al.(2023)Wang, Variengien, Conmy, Shlegeris, and
+  Steinhardt]{wang2023ioi}
+Kevin Wang, Alexandre Variengien, Arthur Conmy, Buck Shlegeris, and Jacob
+  Steinhardt.
+\newblock Interpretability in the wild: a circuit for indirect object
+  identification in {GPT}-2 small.
+\newblock \emph{arXiv preprint arXiv:2211.00593}, 2023.
+
+\bibitem[Yang et~al.(2024)Yang, Yang, Hui, Zheng, Yu, et~al.]{yang2024qwen2}
+An~Yang, Baosong Yang, Binyuan Hui, Bo~Zheng, Bowen Yu, et~al.
+\newblock Qwen2 technical report.
+\newblock \emph{arXiv preprint arXiv:2407.10671}, 2024.
+
+\bibitem[Yu et~al.(2024)Yu, Wang, Shan, Reed, and Wan]{yu2024superweights}
+Mengxia Yu, De~Wang, Qi~Shan, Colorado~J Reed, and Alvin Wan.
+\newblock The super weight in large language models.
+\newblock \emph{arXiv preprint arXiv:2411.07191}, 2024.
+
+\bibitem[Zou et~al.(2023)Zou, Phan, Chen, Campbell, Guo, Ren, Pan, Yin,
+  Mazeika, Dombrowski, et~al.]{zou2023representation}
+Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren,
+  Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, et~al.
+\newblock Representation engineering: A top-down approach to {AI} transparency.
+\newblock \emph{arXiv preprint arXiv:2310.01405}, 2023.
+
+\end{thebibliography}
