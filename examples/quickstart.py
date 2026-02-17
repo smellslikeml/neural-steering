@@ -1,8 +1,8 @@
 """Minimal example: find and steer capital city neurons."""
 import torch
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
-steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct", dtype=torch.bfloat16)
+steerer = NeuronSteerer("meta-llama/Llama-3.2-1B-Instruct")
 
 # Discover the circuit for "say a capital city"
 circuit = steerer.find_feature(
