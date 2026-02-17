@@ -1,10 +1,9 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 
-% NeurIPS 2025 style
-\usepackage[final]{neurips_2025}
-
+\usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{natbib}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{booktabs}
@@ -37,7 +36,7 @@
 \begin{abstract}
 \citet{arora2025circuits} recently showed that language model circuits are remarkably sparse in the neuron basis: roughly 100--200 MLP neurons, identified via Relevance Propagation (RelP), form faithful circuits for diverse tasks.
 This paper is a \emph{reproduction study and practical guide} based on their method.
-We provide a clean, standalone reimplementation of their three LRP linearization rules (LN-rule, AH-rule, Half-rule) in a single-file Python module requiring only PyTorch and Hugging Face Transformers.
+We provide a clean, standalone reimplementation of their three LRP linearization rules (LN-rule, AH-rule, Half-rule) in a Python package requiring only PyTorch and Hugging Face Transformers.
 We reproduce their core findings---including faithfulness curves on subject-verb agreement ($f{=}0.74$ at 2\% for SVA Simple, $f{=}0.90$ for Nounpp) and factual recall circuit discovery---and confirm that neuron-basis circuits are indeed extremely sparse.
 As minor practical extensions, we add: (1)~a contrastive discovery mode that applies Contrastive Activation Addition at the neuron level (useful for behaviors like refusal where clean target tokens are unavailable), (2)~an automated universal-neuron blacklist (replacing Arora et al.'s hand-curated list), and (3)~cross-model runs on Qwen2.5-7B and Mistral-7B confirming the approach generalizes within the gated-MLP architecture family.
 We also report an observation from running their edge attribution method: circuits exhibit an hourglass topology where a single bottleneck neuron serves as both major source and target hub.
@@ -68,7 +67,7 @@ The core method---the three LRP rules, neuron attribution, circuit selection, an
 Our aim is to make this method more accessible by providing:
 
 \begin{enumerate}
-    \item \textbf{A standalone reimplementation.} A single-file Python module (\texttt{neuron\_steer.py}) implementing their RelP attribution, circuit selection, neuron-level steering, edge attribution, and faithfulness evaluation. No SAE training, no external interpretability libraries---only PyTorch and Hugging Face Transformers.
+    \item \textbf{A standalone reimplementation.} A Python package (\texttt{neuron\_steer}) implementing their RelP attribution, circuit selection, neuron-level steering, edge attribution, and faithfulness evaluation. No SAE training, no external interpretability libraries---only PyTorch and Hugging Face Transformers.
 
     \item \textbf{Reproduction of core results.} We verify faithfulness curves on subject-verb agreement and factual recall circuit discovery, confirming the extreme sparsity reported by \citet{arora2025circuits}.
 
@@ -658,12 +657,12 @@ Our standalone reimplementation confirms their core finding: as few as 2\% of at
 As practical extensions, we add contrastive discovery (CAA at the neuron level), automated blacklist detection, and cross-model compatibility---all of which are engineering conveniences rather than methodological contributions.
 We also observe an hourglass topology in edge attribution graphs and a possible connection between super weight neurons and circuit infrastructure, both of which are preliminary observations warranting further investigation.
 
-The primary value of this work is accessibility: a single-file Python module with no external interpretability dependencies that makes it easy to try neuron-basis circuit discovery on new tasks and models.
+The primary value of this work is accessibility: a Python package with no external interpretability dependencies that makes it easy to try neuron-basis circuit discovery on new tasks and models.
 We hope this lowers the barrier to adopting the method introduced by \citet{arora2025circuits} for both research and safety applications.
 
 
-\bibliography{references}
 \bibliographystyle{plainnat}
+\bibliography{references}
 
 \newpage
 
