@@ -673,11 +673,11 @@ We hope this lowers the barrier to adopting the method introduced by \citet{aror
 \label{sec:api}
 %% ===================================================================
 
-The toolkit is distributed as a single Python file \texttt{neuron\_steer.py} with no dependencies beyond PyTorch and Hugging Face Transformers.
+The toolkit is distributed as a Python package \texttt{neuron\_steer} with no dependencies beyond PyTorch and Hugging Face Transformers.
 The primary interface is the \texttt{NeuronSteerer} class:
 
 \begin{verbatim}
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
 # Initialize (auto-detects universal neurons)
 s = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")

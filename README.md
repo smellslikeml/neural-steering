@@ -3,7 +3,7 @@
 Attribute and steer individual MLP neurons in language models.
 
 ```python
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
 steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")
 
@@ -56,7 +56,7 @@ Results from Llama-3.1-8B-Instruct:
 
 ## API Reference
 
-### `NeuronSteerer(model_name, device="cuda", dtype=torch.bfloat16, auto_blacklist=True)`
+### `NeuronSteerer(model_name, device="cuda", auto_blacklist=True)`
 
 Loads a HuggingFace causal LM with eager attention and auto-detects universal neurons.
 

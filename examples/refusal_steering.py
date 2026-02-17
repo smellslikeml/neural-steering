@@ -1,8 +1,7 @@
 """Contrastive refusal circuit discovery and ablation."""
-import torch
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
-steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct", dtype=torch.bfloat16)
+steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")
 
 # Contrastive discovery: harmful (refused) vs harmless (answered)
 circuit = steerer.find_feature(

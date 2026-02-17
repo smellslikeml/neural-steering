@@ -862,7 +862,7 @@ Requirements: Python 3.9+, PyTorch 2.0+, a CUDA GPU. The model (Llama-3.1-8B-Ins
 ### Basic usage: discover and steer
 
 ```python
-from neuron_steer import NeuronSteerer
+from neuron_steer.core import NeuronSteerer
 
 # Load model (takes ~30 seconds, downloads ~16 GB first time)
 steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")
