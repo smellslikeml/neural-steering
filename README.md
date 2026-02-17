@@ -22,6 +22,7 @@ Standalone reimplementation of the neuron-circuit method from [Arora et al. 2026
 
 ```bash
 pip install torch transformers accelerate
+pip install -e .
 ```
 
 Python 3.9+, PyTorch 2.0+ with CUDA. GPU required (16GB+ VRAM).
