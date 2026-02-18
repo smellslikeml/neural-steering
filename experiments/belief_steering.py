@@ -31,9 +31,6 @@ from collections import defaultdict
 
 import torch
 
-# Ensure neuron_steer is importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 from neuron_steer.core import NeuronSteerer, Circuit
 
 

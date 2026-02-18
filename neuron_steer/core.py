@@ -1,5 +1,5 @@
 """
-neuron_steer.py - Neuron Circuit Discovery and Steering for Language Models
+neuron_steer.core - Neuron Circuit Discovery and Steering for Language Models
 
 Based on: "Language Model Circuits Are Sparse in the Neuron Basis" (arxiv 2601.22594)
 Implementation by cc
@@ -955,10 +955,10 @@ def steer_neurons(
 
     if all_positions:
         # Group by layer, collect unique neuron indices
-        by_layer: Dict[int, List[int]] = {}
+        by_layer_sets: Dict[int, set] = {}
         for nidx in neurons:
-            by_layer.setdefault(nidx.layer, set()).add(nidx.neuron)
-        by_layer = {l: sorted(ns) for l, ns in by_layer.items()}
+            by_layer_sets.setdefault(nidx.layer, set()).add(nidx.neuron)
+        by_layer: Dict[int, List[int]] = {l: sorted(ns) for l, ns in by_layer_sets.items()}
 
         for layer_idx, neuron_indices in by_layer.items():
             idx_tensor = torch.tensor(neuron_indices, dtype=torch.long)
@@ -1268,6 +1268,11 @@ class NeuronSteerer:
         percentage_threshold=0.005: keep neurons with |attr| >= 0.5% of |reference_value|.
         When no counterfactual tokens given, auto-enables target_only (backprop from target
         logit alone, not logit_diff) — matching TransluceAI's exact methodology.
+
+        NOTE: When selection_method='percentage' and batch_aggregation='any', the
+        per-prompt threshold filtering determines circuit size. The top_k parameter
+        is IGNORED in this mode. This matches TransluceAI's approach where circuit
+        size is determined by the threshold, not a fixed k.
 
         precomputed_attributions: (aggregated_dict, avg_ld) from a prior call with
             return_raw_attributions=True. Skips all LRP computation — only does selection.
@@ -4404,11 +4409,11 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python neuron_steer.py                          # all experiments, Llama-3.1-8B-Instruct
-  python neuron_steer.py --interactive             # launch interactive REPL
-  python neuron_steer.py --task refusal           # just refusal steering
-  python neuron_steer.py --task capitals --model meta-llama/Llama-3-8B
-  python neuron_steer.py --task knowledge,sva     # multiple tasks
+  python -m neuron_steer.core                          # all experiments, Llama-3.1-8B-Instruct
+  python -m neuron_steer.core --interactive             # launch interactive REPL
+  python -m neuron_steer.core --task refusal           # just refusal steering
+  python -m neuron_steer.core --task capitals --model meta-llama/Llama-3-8B
+  python -m neuron_steer.core --task knowledge,sva     # multiple tasks
         """,
     )
     parser.add_argument("model", nargs="?", default="meta-llama/Llama-3.1-8B-Instruct",

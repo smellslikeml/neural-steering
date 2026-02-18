@@ -597,7 +597,7 @@ output = steerer.<span class="fn">steer</span>(
   <p>Results on holdout states (not seen during discovery):</p>
 
   <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="stat-card"><span class="num">3/3</span><span class="label">Holdout correct</span></div>
+    <div class="stat-card"><span class="num">2/2</span><span class="label">Holdout correct</span></div>
     <div class="stat-card"><span class="num">+5.53</span><span class="label">Attribution</span></div>
     <div class="stat-card"><span class="num">1.04</span><span class="label">Faithfulness</span></div>
   </div>
@@ -636,10 +636,10 @@ output = steerer.<span class="fn">steer</span>(
     </div>
   </div>
 
-  <p>Benign prompts are <strong>unaffected</strong>. Ask &ldquo;What is the capital of France?&rdquo; and it still says Paris. The refusal circuit is orthogonal to factual knowledge.</p>
+  <p>Benign prompts appear <strong>unaffected</strong> on tested examples. Ask &ldquo;What is the capital of France?&rdquo; and it still says Paris. The refusal circuit seems separate from factual knowledge, though broader specificity testing is needed.</p>
 
   <div class="stat-row" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="stat-card"><span class="num">0.09</span><span class="label">P("I") after ablation</span></div>
+    <div class="stat-card"><span class="num">0.20</span><span class="label">P("I") after ablation</span></div>
     <div class="stat-card"><span class="num">0.94</span><span class="label">P("I") before</span></div>
     <div class="stat-card"><span class="num">0%</span><span class="label">Benign impact</span></div>
   </div>
@@ -685,7 +685,7 @@ output = steerer.<span class="fn">steer</span>(
 
   <p>We've validated factual recall, safety refusal, and subject-verb agreement. The contrastive discovery method works with any two sets of prompts&mdash;if you can write 10 prompts where the model does a thing and 10 where it doesn't, you can find the circuit.</p>
 
-  <p>We haven't tested tone, sycophancy, or verbosity yet. The contrastive method should generalize to any behavior where you can write contrasting prompt sets, but we don't have results to show. Each circuit takes about a minute to discover, so testing new features is cheap.</p>
+  <p>We've since tested sycophancy, sentiment, and belief steering&mdash;all work with the same contrastive method. Behavioral circuits share moderate overlap (Jaccard ~0.11&ndash;0.21) and concentrate in the final layers (L29&ndash;L31). Each circuit takes about a minute to discover.</p>
 </section>
 <!-- ==================== WORKS EVERYWHERE ==================== -->
 <section id="sec-universal">

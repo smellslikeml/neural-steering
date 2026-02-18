@@ -1,0 +1,1682 @@
+{
+  "config": {
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "top_k": 200,
+    "multipliers": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      3.0
+    ],
+    "n_positive_prompts": 20,
+    "n_negative_prompts": 20,
+    "n_test_prompts": 12,
+    "n_factual_probes": 10
+  },
+  "load_time_s": 11.851626873016357,
+  "circuit": {
+    "n_neurons": 200,
+    "layers_touched": [
+      16,
+      19,
+      21,
+      22,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "layer_stats": {
+      "16": {
+        "count": 1,
+        "mean_attr": 0.59375,
+        "max_attr": 0.59375
+      },
+      "19": {
+        "count": 1,
+        "mean_attr": 0.390625,
+        "max_attr": 0.390625
+      },
+      "21": {
+        "count": 2,
+        "mean_attr": 0.646484375,
+        "max_attr": 0.91015625
+      },
+      "22": {
+        "count": 1,
+        "mean_attr": 0.63671875,
+        "max_attr": 0.63671875
+      },
+      "26": {
+        "count": 1,
+        "mean_attr": 0.400390625,
+        "max_attr": 0.400390625
+      },
+      "27": {
+        "count": 2,
+        "mean_attr": 0.4150390625,
+        "max_attr": 0.41796875
+      },
+      "28": {
+        "count": 5,
+        "mean_attr": 0.623046875,
+        "max_attr": 1.0625
+      },
+      "29": {
+        "count": 8,
+        "mean_attr": 0.447265625,
+        "max_attr": 0.55859375
+      },
+      "30": {
+        "count": 17,
+        "mean_attr": 0.49850643382352944,
+        "max_attr": 0.73828125
+      },
+      "31": {
+        "count": 162,
+        "mean_attr": 0.6671850887345679,
+        "max_attr": 2.40625
+      }
+    },
+    "discovery_time_s": 3.8790793418884277
+  },
+  "steering": {
+    "0.0": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "Dogs, also known as canines, are a domesticated subspecies of the gray wolf (Canis lupus familiaris). They are one of the most popular pets in the world and are known for their loyalty, intelligence, and affectionate nature. Here are some interesting",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.92587108784782,
+        "pos_probs": {
+          " great": 1.0373923942097463e-12,
+          " good": 9.947598300641403e-14,
+          " wonderful": 1.331500243395567e-09,
+          " love": 1.0231815394945443e-12
+        },
+        "neg_probs": {
+          " bad": 3.774758283725532e-14,
+          " terrible": 3.268496584496461e-12,
+          " awful": 3.296918293926865e-12,
+          " hate": 1.7497114868092467e-13
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "As a digital AI assistant, I don't have personal experiences or emotions, but I can provide information and insights about rainy days. Rainy days can be quite pleasant and have their own unique charm. Here are a few reasons why:\n\n1.  **Cozy atmospher",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.22453285296691816,
+        "pos_probs": {
+          " great": 2.6645352591003757e-13,
+          " good": 3.1308289294429414e-14,
+          " wonderful": 2.9331204132176936e-11,
+          " love": 8.881784197001252e-13
+        },
+        "neg_probs": {
+          " bad": 3.219646771412954e-14,
+          " terrible": 1.1866063687193673e-12,
+          " awful": 2.0321522242738865e-12,
+          " hate": 2.1458390619955026e-12
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a vast and diverse ecosystem that is home to a wide variety of plant and animal species. It is a dense area of land dominated by trees, which can range in height from a few meters to over 100 meters. The forest floor is typically covered ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.04061472511751959,
+        "pos_probs": {
+          " great": 1.6764367671839864e-14,
+          " good": 1.5987211554602254e-14,
+          " wonderful": 4.206412995699793e-12,
+          " love": 1.4988010832439613e-14
+        },
+        "neg_probs": {
+          " bad": 7.216449660063518e-15,
+          " terrible": 1.9095836023552692e-13,
+          " awful": 9.547918011776346e-14,
+          " hate": 1.9628743075372768e-13
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can provide information and insights on the benefits of cooking at home. Cooking at home can be a great way to take control of your diet, save money, and develop a sense of accomp",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.16240242471184468,
+        "pos_probs": {
+          " great": 1.2718714970105793e-12,
+          " good": 3.1308289294429414e-14,
+          " wonderful": 1.8417267710901797e-11,
+          " love": 3.517186542012496e-13
+        },
+        "neg_probs": {
+          " bad": 1.2989609388114332e-14,
+          " terrible": 1.3713474800169934e-12,
+          " awful": 5.613287612504791e-13,
+          " hate": 1.5774048733874224e-12
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "The ocean is the largest and most complex ecosystem on Earth, covering over 70% of the planet's surface. It plays a vital role in regulating the Earth's climate, weather patterns, and the water cycle. Here are some key facts about the ocean:\n\n**Physi",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.07666958583849426,
+        "pos_probs": {
+          " great": 9.71445146547012e-15,
+          " good": 2.914335439641036e-15,
+          " wonderful": 8.29913915367797e-12,
+          " love": 7.93809462606987e-15
+        },
+        "neg_probs": {
+          " bad": 1.942890293094024e-15,
+          " terrible": 1.3944401189291966e-13,
+          " awful": 5.040412531798211e-14,
+          " hate": 2.275957200481571e-15
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can share the benefits and importance of reading books. Reading books is an activity that offers a wide range of benefits for individuals of all ages. Here are some of the advanta",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.6700848978506286,
+        "pos_probs": {
+          " great": 2.8563817977556027e-12,
+          " good": 8.570921750106208e-14,
+          " wonderful": 2.219167072325945e-10,
+          " love": 6.608047442568932e-13
+        },
+        "neg_probs": {
+          " bad": 1.7208456881689926e-14,
+          " terrible": 8.981260180007666e-12,
+          " awful": 1.4495071809506044e-12,
+          " hate": 5.861977570020827e-13
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a sight to behold, a kaleidoscope of colors and sounds that come alive after the sun sets. The cityscape transforms into a vibrant and dynamic entity, with the twinkling lights of buildings, streets, and vehicles creating a mesmeri",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.24139933870700703,
+        "pos_probs": {
+          " great": 3.979039320256561e-13,
+          " good": 8.952838470577262e-13,
+          " wonderful": 3.183231456205249e-11,
+          " love": 6.750155989720952e-13
+        },
+        "neg_probs": {
+          " bad": 7.949196856316121e-14,
+          " terrible": 2.5437429940211587e-12,
+          " awful": 5.968558980384842e-13,
+          " hate": 2.9984903449076228e-12
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "I don't have personal opinions or experiences, but I can provide information and insights about traveling.  Traveling can be a great way to broaden one's perspective, learn about different cultures, and create lasting memories. It can also be a great",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.7425582479103541,
+        "pos_probs": {
+          " great": 2.3732127374387346e-12,
+          " good": 5.218048215738236e-14,
+          " wonderful": 3.092281986027956e-10,
+          " love": 1.1084466677857563e-12
+        },
+        "neg_probs": {
+          " bad": 2.042810365310288e-14,
+          " terrible": 3.396394276933279e-12,
+          " awful": 3.808509063674137e-12,
+          " hate": 1.2079226507921703e-12
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons and is characterized by cold temperatures, short days, and in many regions, snow and ice. It is the season that occurs after autumn and before spring in the Northern Hemisphere, and after summer and before autumn in ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.29083174240315557,
+        "pos_probs": {
+          " great": 1.7319479184152442e-14,
+          " good": 4.052314039881821e-15,
+          " wonderful": 4.1382008930668235e-11,
+          " love": 2.475797344914099e-14
+        },
+        "neg_probs": {
+          " bad": 1.532107773982716e-14,
+          " terrible": 3.4994229736184934e-13,
+          " awful": 6.039613253960852e-13,
+          " hate": 4.973799150320701e-14
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "Gardening is a wonderful hobby that offers numerous benefits for both physical and mental well-being. Here are some of my thoughts on gardening:\n\n1.  **Therapeutic benefits**: Gardening has been shown to have a positive impact on mental health, reduc",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.6693078109228233,
+        "pos_probs": {
+          " great": 8.704148513061227e-13,
+          " good": 2.1760371282653068e-14,
+          " wonderful": 2.064552973024547e-10,
+          " love": 9.734435479913373e-13
+        },
+        "neg_probs": {
+          " bad": 1.0602629885170245e-14,
+          " terrible": 1.8189894035458565e-12,
+          " awful": 6.963318810448982e-13,
+          " hate": 4.014566457044566e-13
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "A sunset is a breathtaking natural phenomenon that occurs when the sun disappears below the horizon, typically at the end of the day. It's a time of transition from day to night, and it's often accompanied by a kaleidoscope of colors and a sense of s",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.028975311822048083,
+        "pos_probs": {
+          " great": 1.3433698597964394e-14,
+          " good": 6.128431095930864e-14,
+          " wonderful": 2.8990143619012088e-12,
+          " love": 1.6209256159527285e-14
+        },
+        "neg_probs": {
+          " bad": 3.7192471324942744e-15,
+          " terrible": 3.552713678800501e-14,
+          " awful": 3.219646771412954e-14,
+          " hate": 1.2789769243681803e-13
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "Handwritten letters are a unique and special form of communication that holds a certain charm and value in today's digital age. Here are some thoughts on the matter:\n\n**The personal touch**: Handwritten letters convey a level of thoughtfulness and ef",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.747037816436222,
+        "pos_probs": {
+          " great": 4.831690603168681e-13,
+          " good": 8.171241461241152e-14,
+          " wonderful": 3.3287506084889174e-10,
+          " love": 3.112177182629239e-12
+        },
+        "neg_probs": {
+          " bad": 8.326672684688674e-15,
+          " terrible": 5.4853899200679734e-12,
+          " awful": 6.338041202980094e-12,
+          " hate": 2.1316282072803006e-12
+        }
+      }
+    ],
+    "0.5": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "Dogs, also known as canines, are a domesticated species of the family Canidae and the order Carnivora. They are one of the most popular pets worldwide, known for their loyalty, intelligence, and affectionate nature. Here are some interesting facts ab",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.9337243694161527,
+        "pos_probs": {
+          " great": 3.481659405224491e-13,
+          " good": 2.7644553313166398e-14,
+          " wonderful": 1.4624674804508686e-09,
+          " love": 2.7000623958883807e-13
+        },
+        "neg_probs": {
+          " bad": 9.547918011776346e-15,
+          " terrible": 1.7124079931818414e-12,
+          " awful": 2.0747847884194925e-12,
+          " hate": 5.484501741648273e-14
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "As a digital AI assistant, I don't have personal experiences or emotions, but I can provide information and insights about rainy days. Rainy days can be quite pleasant and have their own unique charm. Here are a few reasons why:\n\n1.  **Cozy atmospher",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.12134324081069395,
+        "pos_probs": {
+          " great": 1.0702549957386509e-13,
+          " good": 1.3600232051658168e-14,
+          " wonderful": 1.3812950783176348e-11,
+          " love": 3.5349501104064984e-13
+        },
+        "neg_probs": {
+          " bad": 1.4876988529977098e-14,
+          " terrible": 7.105427357601002e-13,
+          " awful": 1.4708234630234074e-12,
+          " hate": 1.2576606422953773e-12
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a vast and diverse ecosystem characterized by a dense growth of trees, shrubs, and other vegetation. It is a self-sustaining community of plants and animals that thrive in a specific climate and geography. The forest can be found in vario",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.013137286025630409,
+        "pos_probs": {
+          " great": 4.6351811278100286e-15,
+          " good": 3.7192471324942744e-15,
+          " wonderful": 1.3216094885137863e-12,
+          " love": 4.6351811278100286e-15
+        },
+        "neg_probs": {
+          " bad": 3.1363800445660672e-15,
+          " terrible": 9.237055564881302e-14,
+          " awful": 5.3734794391857577e-14,
+          " hate": 1.0480505352461478e-13
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can provide information and insights on the benefits of cooking at home. Cooking at home can be a wonderful experience that offers numerous advantages. Here are some of the benefi",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.11748128816887177,
+        "pos_probs": {
+          " great": 6.217248937900877e-13,
+          " good": 1.8207657603852567e-14,
+          " wonderful": 1.2846612662542611e-11,
+          " love": 1.616484723854228e-13
+        },
+        "neg_probs": {
+          " bad": 6.2727600891321345e-15,
+          " terrible": 9.805489753489383e-13,
+          " awful": 4.298783551348606e-13,
+          " hate": 1.1084466677857563e-12
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "The ocean is the largest and deepest body of saltwater on Earth, covering over 70% of the planet's surface. It plays a crucial role in regulating the Earth's climate, weather patterns, and supporting a vast array of marine life. Here are some key fac",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.0633510776258588,
+        "pos_probs": {
+          " great": 4.107825191113079e-15,
+          " good": 7.840950111415168e-16,
+          " wonderful": 6.764366844436154e-12,
+          " love": 1.942890293094024e-15
+        },
+        "neg_probs": {
+          " bad": 6.487865800153259e-16,
+          " terrible": 7.949196856316121e-14,
+          " awful": 3.175237850427948e-14,
+          " hate": 6.696032617270475e-16
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can share the benefits and importance of reading books. Reading books is an activity that offers numerous benefits for individuals of all ages. Here are some of the advantages of ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.6354019218840403,
+        "pos_probs": {
+          " great": 1.3287149158713873e-12,
+          " good": 3.8191672047105385e-14,
+          " wonderful": 1.8826540326699615e-10,
+          " love": 3.4283687000424834e-13
+        },
+        "neg_probs": {
+          " bad": 8.271161533457416e-15,
+          " terrible": 7.389644451905042e-12,
+          " awful": 1.2079226507921703e-12,
+          " hate": 4.0323300254385686e-13
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a breathtaking sight, a kaleidoscope of colors and sounds that come alive after the sun sets. The sky transforms into a canvas of twinkling lights, a celestial showcase of urban splendor. The city's steel and concrete skyscrapers, ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.0962964326165416,
+        "pos_probs": {
+          " great": 1.4299672557172016e-13,
+          " good": 2.753353101070388e-13,
+          " wonderful": 1.0345502232667059e-11,
+          " love": 2.5579538487363607e-13
+        },
+        "neg_probs": {
+          " bad": 4.5075054799781356e-14,
+          " terrible": 1.4210854715202004e-12,
+          " awful": 4.0678571622265736e-13,
+          " hate": 1.5418777365994174e-12
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "I don't have personal opinions or experiences, but I can provide information and insights about traveling. Traveling can be a wonderful way to broaden one's perspective, learn about different cultures, and create lasting memories. It can also be a gr",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.6781622110796623,
+        "pos_probs": {
+          " great": 8.419931418757187e-13,
+          " good": 2.3203661214665772e-14,
+          " wonderful": 2.2009771782904863e-10,
+          " love": 4.2454928461665986e-13
+        },
+        "neg_probs": {
+          " bad": 9.103828801926284e-15,
+          " terrible": 2.0747847884194925e-12,
+          " awful": 2.3163693185779266e-12,
+          " hate": 6.643574579356937e-13
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons and is characterized by cold temperatures, short days, and often snow and ice in the Northern Hemisphere. It typically occurs from December to February in the Northern Hemisphere and from June to August in the Southe",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.05627908652630489,
+        "pos_probs": {
+          " great": 2.373101715136272e-15,
+          " good": 7.147060721024445e-16,
+          " wonderful": 5.9685589803848416e-12,
+          " love": 3.219646771412954e-15
+        },
+        "neg_probs": {
+          " bad": 2.9559688030644793e-15,
+          " terrible": 5.861977570020827e-14,
+          " awful": 1.2079226507921703e-13,
+          " hate": 7.716050021144838e-15
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "Gardening is a wonderful hobby that offers numerous benefits for both physical and mental well-being. Here are some of my thoughts on gardening:\n\n1.  **Stress Relief**: Gardening can be a great stress-reliever. The physical activity involved in garde",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.5753282064529761,
+        "pos_probs": {
+          " great": 2.646771690706373e-13,
+          " good": 6.217248937900877e-15,
+          " wonderful": 1.3733369996771216e-10,
+          " love": 3.0020430585864233e-13
+        },
+        "neg_probs": {
+          " bad": 4.0245584642661925e-15,
+          " terrible": 1.1439738045737613e-12,
+          " awful": 4.654054919228656e-13,
+          " hate": 1.794120407794253e-13
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "A sunset is a breathtaking natural phenomenon that occurs when the sun disappears below the horizon, typically at the end of the day. It's a time of transition from day to night, and the sky transforms into a kaleidoscope of colors, painting a beauti",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.018129096300366316,
+        "pos_probs": {
+          " great": 5.773159728050814e-15,
+          " good": 2.3425705819590803e-14,
+          " wonderful": 1.8118839761882555e-12,
+          " love": 7.993605777301127e-15
+        },
+        "neg_probs": {
+          " bad": 2.3314683517128287e-15,
+          " terrible": 2.653433028854124e-14,
+          " awful": 3.042011087472929e-14,
+          " hate": 8.659739592076221e-14
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "Handwritten letters are a unique and special form of communication that holds a certain charm and value in today's digital age. Here are some thoughts on the matter:\n\n1.  **Personal touch**: Handwritten letters convey a personal touch that digital co",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.6469344427913352,
+        "pos_probs": {
+          " great": 1.474376176702208e-13,
+          " good": 2.90878432451791e-14,
+          " wonderful": 1.9554136088117957e-10,
+          " love": 1.0089706847793423e-12
+        },
+        "neg_probs": {
+          " bad": 2.789435349370706e-15,
+          " terrible": 2.7995383788947947e-12,
+          " awful": 3.637978807091713e-12,
+          " hate": 9.237055564881302e-13
+        }
+      }
+    ],
+    "1.0": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "Dogs, also known as canines, are a domesticated species of the family Canidae and are one of the most popular pets worldwide. They are highly social, intelligent, and loyal animals that have been human companions for thousands of years.\n\n**Physical C",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.974799539526986,
+        "pos_probs": {
+          " great": 3.3928415632544784e-13,
+          " good": 2.5202062658991053e-14,
+          " wonderful": 4.103640094399452e-09,
+          " love": 2.007283228522283e-13
+        },
+        "neg_probs": {
+          " bad": 7.216449660063518e-15,
+          " terrible": 2.4726887204451486e-12,
+          " awful": 3.566924533515703e-12,
+          " hate": 5.484501741648273e-14
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "As a digital AI assistant, I don't have personal experiences or emotions, but I can provide information and insights about rainy days.\n\nRainy days can be quite pleasant and cozy for many people. Here are some reasons why:\n\n1.  **Relaxation**: Rainy d",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.13312470155386674,
+        "pos_probs": {
+          " great": 1.0702549957386509e-13,
+          " good": 1.6653345369377348e-14,
+          " wonderful": 1.5688783605583012e-11,
+          " love": 3.481659405224491e-13
+        },
+        "neg_probs": {
+          " bad": 1.865174681370263e-14,
+          " terrible": 1.0444978215673473e-12,
+          " awful": 2.4300561562995426e-12,
+          " hate": 1.7408297026122455e-12
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a vast and diverse ecosystem characterized by a dense growth of trees, shrubs, and other vegetation. It is a natural environment that provides a habitat for a wide variety of plant and animal species. Here's a descriptive overview of a ty",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.008902760390103825,
+        "pos_probs": {
+          " great": 3.2612801348363973e-15,
+          " good": 2.248201624865942e-15,
+          " wonderful": 8.917311333789257e-13,
+          " love": 3.58046925441613e-15
+        },
+        "neg_probs": {
+          " bad": 3.427813588530171e-15,
+          " terrible": 9.681144774731365e-14,
+          " awful": 6.350475700855895e-14,
+          " hate": 1.199040866595169e-13
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can provide information and insights about cooking at home.\n\nCooking at home has numerous benefits. Here are some of them:\n\n1.  **Healthier options**: When you cook at home, you h",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.1673378595011554,
+        "pos_probs": {
+          " great": 6.430411758628907e-13,
+          " good": 2.3203661214665772e-14,
+          " wonderful": 2.0122570276726037e-11,
+          " love": 1.7408297026122455e-13
+        },
+        "neg_probs": {
+          " bad": 7.66053886991358e-15,
+          " terrible": 1.7408297026122455e-12,
+          " awful": 7.638334409421077e-13,
+          " hate": 1.7976731214730535e-12
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "The ocean is the largest and deepest body of saltwater on Earth, covering over 70% of the planet's surface. It plays a crucial role in regulating the Earth's climate, weather patterns, and supporting a vast array of marine life. Here are some fascina",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.11194471969108775,
+        "pos_probs": {
+          " great": 4.6629367034256575e-15,
+          " good": 6.314393452555578e-16,
+          " wonderful": 1.261923898709938e-11,
+          " love": 1.6375789613221059e-15
+        },
+        "neg_probs": {
+          " bad": 5.93275428784068e-16,
+          " terrible": 1.1191048088221578e-13,
+          " awful": 4.9960036108132044e-14,
+          " hate": 7.042977312465837e-16
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "Reading books is an incredibly valuable activity that offers numerous benefits for individuals of all ages. Here are some of the reasons why reading books is so beneficial:\n\n1.  **Expands knowledge and understanding**: Reading books exposes you to ne",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.7458090073559253,
+        "pos_probs": {
+          " great": 1.3926637620897964e-12,
+          " good": 4.596323321948148e-14,
+          " wonderful": 3.4015101846307516e-10,
+          " love": 4.547473508864641e-13
+        },
+        "neg_probs": {
+          " bad": 1.1268763699945339e-14,
+          " terrible": 1.3585577107733116e-11,
+          " awful": 2.2595258997171186e-12,
+          " hate": 7.212008767965017e-13
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a breathtaking sight, a kaleidoscope of colors and sounds that come alive under the stars. The sky is a deep shade of indigo, with the stars twinkling like diamonds scattered across the canvas of the universe. The city's skyline is",
+        "sentiment_score": 0.0,
+        "valence_ratio": 0.07048511139394721,
+        "pos_probs": {
+          " great": 1.270095140171179e-13,
+          " good": 2.0250467969162855e-13,
+          " wonderful": 7.332801033044234e-12,
+          " love": 2.220446049250313e-13
+        },
+        "neg_probs": {
+          " bad": 5.906386491005833e-14,
+          " terrible": 1.6626700016786344e-12,
+          " awful": 5.755396159656812e-13,
+          " hate": 1.6768808563938364e-12
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "Traveling is a wonderful topic. As a digital AI assistant, I don't have personal experiences or physical abilities to travel, but I can provide information and insights about traveling.\n\nTraveling can be a life-enriching experience that broadens one'",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.8126546924956931,
+        "pos_probs": {
+          " great": 1.1226575225009583e-12,
+          " good": 4.729550084903167e-14,
+          " wonderful": 4.838511813431978e-10,
+          " love": 7.069900220812997e-13
+        },
+        "neg_probs": {
+          " bad": 1.887379141862766e-14,
+          " terrible": 5.286437954055145e-12,
+          " awful": 5.115907697472721e-12,
+          " hate": 1.5560885913146194e-12
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons and typically occurs from December to February in the Northern Hemisphere, and June to August in the Southern Hemisphere. It is characterized by cold temperatures, short days, and often snowfall in many parts of the ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.03283681235459393,
+        "pos_probs": {
+          " great": 1.5334955527634975e-15,
+          " good": 6.314393452555578e-16,
+          " wonderful": 3.396394276933279e-12,
+          " love": 2.0816681711721685e-15
+        },
+        "neg_probs": {
+          " bad": 2.7200464103316335e-15,
+          " terrible": 4.3520742565306136e-14,
+          " awful": 1.092459456231154e-13,
+          " hate": 5.717648576819556e-15
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "Gardening is a wonderful hobby that offers numerous benefits for both physical and mental well-being. Here are some of my thoughts on gardening:\n\n1.  **Stress Relief**: Gardening can be a therapeutic activity that helps reduce stress and anxiety. The",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.7361129422753121,
+        "pos_probs": {
+          " great": 3.304023721284466e-13,
+          " good": 9.381384558082573e-15,
+          " wonderful": 2.9103830456733704e-10,
+          " love": 3.907985046680551e-13
+        },
+        "neg_probs": {
+          " bad": 7.077671781985373e-15,
+          " terrible": 2.9842794901924208e-12,
+          " awful": 1.2363443602225743e-12,
+          " hate": 3.6770586575585185e-13
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "A sunset is a breathtaking natural phenomenon that occurs when the sun disappears below the horizon, typically at the end of the day. It's a kaleidoscope of colors that paint the sky with vibrant hues, creating a mesmerizing display of beauty and tra",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.030275372089862734,
+        "pos_probs": {
+          " great": 7.771561172376096e-15,
+          " good": 2.8310687127941492e-14,
+          " wonderful": 3.083755473198835e-12,
+          " love": 1.199040866595169e-14
+        },
+        "neg_probs": {
+          " bad": 4.274358644806853e-15,
+          " terrible": 6.084022174945858e-14,
+          " awful": 7.815970093361102e-14,
+          " hate": 1.6964207816272392e-13
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "Handwritten letters hold a special place in the world of communication. In an era dominated by digital technology and instant messaging, handwritten letters can be a refreshing and meaningful way to connect with others. Here are some reasons why I th",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.7073226960786769,
+        "pos_probs": {
+          " great": 1.2168044349891716e-13,
+          " good": 2.9753977059954195e-14,
+          " wonderful": 2.6557245291769505e-10,
+          " love": 9.592326932761353e-13
+        },
+        "neg_probs": {
+          " bad": 3.1363800445660672e-15,
+          " terrible": 3.751665644813329e-12,
+          " awful": 5.343281372915953e-12,
+          " hate": 1.2505552149377763e-12
+        }
+      }
+    ],
+    "1.5": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "Dogs are one of the most popular pets in the world, known for their loyalty, intelligence, and affectionate nature. Here are some interesting facts about dogs:\n\n**Types of Dogs**\n\nThere are over 340 recognized breeds of dogs, ranging from the tiny Ch",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.995127934101181,
+        "pos_probs": {
+          " great": 1.1155520951433573e-12,
+          " good": 8.881784197001252e-14,
+          " wonderful": 2.6659108698368073e-08,
+          " love": 5.577760475716786e-13
+        },
+        "neg_probs": {
+          " bad": 2.142730437526552e-14,
+          " terrible": 1.1993961379630491e-11,
+          " awful": 1.830358087318018e-11,
+          " hate": 2.1049828546892968e-13
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "As a digital AI assistant, I don't have personal experiences or emotions, but I can provide you with some insights about rainy days.\n\nRainy days can be quite lovely in many ways. Here are a few reasons why:\n\n1.  **Cozy atmosphere**: Rainy days often ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.24664217574468547,
+        "pos_probs": {
+          " great": 2.540190280342358e-13,
+          " good": 5.062616992290714e-14,
+          " wonderful": 3.7061909097246826e-11,
+          " love": 8.064660050877137e-13
+        },
+        "neg_probs": {
+          " bad": 5.639932965095795e-14,
+          " terrible": 3.268496584496461e-12,
+          " awful": 8.071765478234738e-12,
+          " hate": 5.201172825763933e-12
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a vast and diverse ecosystem characterized by a dense growth of trees, shrubs, and other vegetation. It is a natural environment that provides a habitat for a wide variety of plants and animals. Here's a descriptive overview of a typical ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.016281721398993743,
+        "pos_probs": {
+          " great": 7.382983113757291e-15,
+          " good": 4.413136522884997e-15,
+          " wonderful": 1.6484591469634324e-12,
+          " love": 8.770761894538737e-15
+        },
+        "neg_probs": {
+          " bad": 1.0602629885170245e-14,
+          " terrible": 2.575717417130363e-13,
+          " awful": 2.007283228522283e-13,
+          " hate": 3.7125857943465235e-13
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "I'm just a large language model, I don't have personal opinions, but I can provide information and insights about cooking at home.\n\nCooking at home has numerous benefits. Here are some of them:\n\n1.  **Healthier options**: When you cook at home, you h",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.4048359276829075,
+        "pos_probs": {
+          " great": 1.9042545318370685e-12,
+          " good": 9.725553695716371e-14,
+          " wonderful": 7.912603905424476e-11,
+          " love": 5.719869022868806e-13
+        },
+        "neg_probs": {
+          " bad": 2.9531932455029164e-14,
+          " terrible": 8.469669410260394e-12,
+          " awful": 3.538502824085299e-12,
+          " hate": 8.071765478234738e-12
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "The ocean is the largest and deepest body of saltwater on Earth, covering over 70% of the planet's surface. It plays a crucial role in regulating the Earth's climate, weather patterns, and supporting a vast array of marine life. Here are some fascina",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.4800800694632953,
+        "pos_probs": {
+          " great": 2.453592884421596e-14,
+          " good": 2.525757381022231e-15,
+          " wonderful": 9.322320693172514e-11,
+          " love": 6.855627177060342e-15
+        },
+        "neg_probs": {
+          " bad": 2.609024107869118e-15,
+          " terrible": 6.714628852932947e-13,
+          " awful": 3.1796787425264483e-13,
+          " hate": 4.107825191113079e-15
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "Reading books is an incredible activity that offers numerous benefits for individuals of all ages. Here are some of my thoughts on reading books:\n\n1.  **Expands knowledge and understanding**: Reading books exposes you to new ideas, perspectives, and ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.8622241513551064,
+        "pos_probs": {
+          " great": 2.7142732506035827e-12,
+          " good": 1.1546319456101628e-13,
+          " wonderful": 9.968061931431293e-10,
+          " love": 1.2718714970105793e-12
+        },
+        "neg_probs": {
+          " bad": 3.752553823233029e-14,
+          " terrible": 4.888534022029489e-11,
+          " awful": 8.185452315956354e-12,
+          " hate": 2.8279600883251987e-12
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a breathtaking sight, a kaleidoscope of colors and sounds that come alive under the stars. The sky is painted with a deep shade of indigo, punctuated by twinkling lights that seem to stretch on forever. The city's skyline is a maje",
+        "sentiment_score": 0.0,
+        "valence_ratio": 0.08907094269046009,
+        "pos_probs": {
+          " great": 2.2026824808563106e-13,
+          " good": 3.019806626980426e-13,
+          " wonderful": 9.72022462519817e-12,
+          " love": 3.801403636316536e-13
+        },
+        "neg_probs": {
+          " bad": 1.4654943925052066e-13,
+          " terrible": 3.637978807091713e-12,
+          " awful": 1.5560885913146194e-12,
+          " hate": 3.296918293926865e-12
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "Traveling can be a wonderful experience. It allows people to explore new places, immerse themselves in different cultures, and broaden their perspectives. Traveling can be a great way to learn about history, try new foods, and meet new people. It can",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9061158196845019,
+        "pos_probs": {
+          " great": 2.5579538487363607e-12,
+          " good": 1.6964207816272392e-13,
+          " wonderful": 1.3969838619232178e-09,
+          " love": 2.0463630789890885e-12
+        },
+        "neg_probs": {
+          " bad": 7.638334409421077e-14,
+          " terrible": 2.2396307031158358e-11,
+          " awful": 1.6257217794191092e-11,
+          " hate": 6.508571459562518e-12
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons, typically occurring from December to February in the Northern Hemisphere and June to August in the Southern Hemisphere. It is characterized by cold temperatures, shorter days, and often snowfall in many parts of the",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.07297153697465189,
+        "pos_probs": {
+          " great": 5.245803791353865e-15,
+          " good": 3.0531133177191805e-15,
+          " wonderful": 7.901235221652314e-12,
+          " love": 7.716050021144838e-15
+        },
+        "neg_probs": {
+          " bad": 1.1324274851176597e-14,
+          " terrible": 1.3855583347321954e-13,
+          " awful": 4.0678571622265736e-13,
+          " hate": 2.3869795029440866e-14
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "Gardening is a wonderful hobby that offers numerous benefits for both physical and mental well-being. Here are some of my thoughts on gardening:\n\n1.  **Therapeutic Benefits**: Gardening has been shown to have a positive impact on mental health, reduc",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9184860927983719,
+        "pos_probs": {
+          " great": 1.2150280781497713e-12,
+          " good": 4.9960036108132044e-14,
+          " wonderful": 1.4988472685217857e-09,
+          " love": 1.7692514120426495e-12
+        },
+        "neg_probs": {
+          " bad": 4.9960036108132044e-14,
+          " terrible": 2.1714186004828662e-11,
+          " awful": 8.697043085703626e-12,
+          " hate": 2.8279600883251987e-12
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "A sunset is a breathtaking natural phenomenon that occurs when the sun disappears below the horizon, marking the end of another day. It's a kaleidoscope of colors that dance across the sky, painting a breathtaking picture of warmth, tranquility, and ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.10947624366542164,
+        "pos_probs": {
+          " great": 2.8199664825478976e-14,
+          " good": 8.038014698286133e-14,
+          " wonderful": 1.233502189279534e-11,
+          " love": 5.1958437552457326e-14
+        },
+        "neg_probs": {
+          " bad": 2.0317081350640365e-14,
+          " terrible": 3.4638958368304884e-13,
+          " awful": 4.3165471197426086e-13,
+          " hate": 8.455458555545192e-13
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "Handwritten letters hold a special place in the world of communication. In an era dominated by digital technology and instant messaging, handwritten letters have become a rare and cherished form of expression. Here are some thoughts on handwritten le",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.8373219050254271,
+        "pos_probs": {
+          " great": 2.2293278334473143e-13,
+          " good": 6.705747068735946e-14,
+          " wonderful": 6.548361852765083e-10,
+          " love": 2.1174173525650986e-12
+        },
+        "neg_probs": {
+          " bad": 9.048317650695026e-15,
+          " terrible": 1.0061285138363019e-11,
+          " awful": 1.3642420526593924e-11,
+          " hate": 3.979039320256561e-12
+        }
+      }
+    ],
+    "2.0": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "Dogs are amazing animals that have been human companions for thousands of years. Here are some interesting facts about dogs:\n\n**Origin and History**\n\nDogs (Canis lupus familiaris) are a domesticated subspecies of the gray wolf. They are believed to h",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9985051331220437,
+        "pos_probs": {
+          " great": 6.508571459562518e-12,
+          " good": 5.755396159656812e-13,
+          " wonderful": 2.2165477275848389e-07,
+          " love": 2.9274360713316128e-12
+        },
+        "neg_probs": {
+          " bad": 1.2612133559741778e-13,
+          " terrible": 9.094947017729282e-11,
+          " awful": 1.3915268937125802e-10,
+          " hate": 1.6271428648906294e-12
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "As a digital AI assistant, I don't have personal experiences or emotions, but I can provide you with some insights about rainy days.\n\nRainy days can be quite lovely in many ways. Here are a few reasons why:\n\n1.  **Cozy atmosphere**: Rainy days often ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.4744626154957416,
+        "pos_probs": {
+          " great": 1.3429257705865894e-12,
+          " good": 3.446132268436486e-13,
+          " wonderful": 1.7826096154749393e-10,
+          " love": 4.291678123991005e-12
+        },
+        "neg_probs": {
+          " bad": 3.907985046680551e-13,
+          " terrible": 2.091837814077735e-11,
+          " awful": 5.161382432561368e-11,
+          " hate": 3.115019353572279e-11
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a vast and diverse ecosystem characterized by a dense growth of trees, shrubs, and other vegetation. It is a natural environment that covers a significant portion of the Earth's land surface, providing a habitat for countless species of p",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.04570119036821596,
+        "pos_probs": {
+          " great": 3.26405569239796e-14,
+          " good": 1.6653345369377348e-14,
+          " wonderful": 4.888534022029489e-12,
+          " love": 4.241051954068098e-14
+        },
+        "neg_probs": {
+          " bad": 5.728750807065808e-14,
+          " terrible": 1.1226575225009583e-12,
+          " awful": 9.379164112033322e-13,
+          " hate": 1.8758328224066645e-12
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "I'm glad you asked about cooking at home. As a neutral AI, I don't have personal opinions, but I can provide you with the benefits and advantages of cooking at home.\n\nCooking at home can be incredibly rewarding and beneficial for various reasons:\n\n1.",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.6473959467889828,
+        "pos_probs": {
+          " great": 6.650680006714538e-12,
+          " good": 4.831690603168681e-13,
+          " wonderful": 3.7471181713044643e-10,
+          " love": 2.4300561562995426e-12
+        },
+        "neg_probs": {
+          " bad": 1.5631940186722204e-13,
+          " terrible": 4.7975845518521965e-11,
+          " awful": 1.8417267710901797e-11,
+          " hate": 4.274625098332763e-11
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "The ocean is the largest and deepest body of saltwater on Earth, covering over 70% of the planet's surface. It plays a crucial role in regulating the Earth's climate, weather patterns, and ecosystems. Here are some fascinating facts about the ocean:\n",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.8998341034798839,
+        "pos_probs": {
+          " great": 2.824407374646398e-13,
+          " good": 2.631228568361621e-14,
+          " wonderful": 1.0040821507573128e-09,
+          " love": 8.615330671091215e-14
+        },
+        "neg_probs": {
+          " bad": 3.175237850427948e-14,
+          " terrible": 7.787548383930698e-12,
+          " awful": 3.922195901395753e-12,
+          " hate": 7.283063041541027e-14
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "What a wonderful topic. Reading books is an incredible activity that offers numerous benefits for the mind, heart, and soul. Here are some of my thoughts on reading books:\n\n1. **Expands knowledge and understanding**: Reading books exposes you to new ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.8892097325419308,
+        "pos_probs": {
+          " great": 5.286437954055145e-12,
+          " good": 3.126388037344441e-13,
+          " wonderful": 2.342858351767063e-09,
+          " love": 3.723243935382925e-12
+        },
+        "neg_probs": {
+          " bad": 1.412203687323199e-13,
+          " terrible": 1.546140993013978e-10,
+          " awful": 2.5693225325085223e-11,
+          " hate": 1.261923898709938e-11
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a breathtaking spectacle of twinkling lights, vibrant energy, and endless possibilities. The sky is painted with a kaleidoscope of colors, as neon signs, streetlights, and building facades illuminate the urban landscape.\n\nThe city'",
+        "sentiment_score": 0.3333333333333333,
+        "valence_ratio": 0.15075725012460817,
+        "pos_probs": {
+          " great": 6.004086117172847e-13,
+          " good": 6.927791673660977e-13,
+          " wonderful": 2.0122570276726037e-11,
+          " love": 1.0587086762825493e-12
+        },
+        "neg_probs": {
+          " bad": 5.400124791776761e-13,
+          " terrible": 1.1141310096718371e-11,
+          " awful": 5.314859663485549e-12,
+          " hate": 9.606537787476555e-12
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "What a broad and exciting topic! As a digital AI assistant, I don't have personal experiences or physical abilities to travel, but I can provide information and insights about traveling.\n\nTraveling can be an incredible way to broaden one's horizons, ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9244216347759693,
+        "pos_probs": {
+          " great": 4.803268893738277e-12,
+          " good": 5.258016244624741e-13,
+          " wonderful": 2.9249349609017372e-09,
+          " love": 5.4001247917767614e-12
+        },
+        "neg_probs": {
+          " bad": 2.913225216616411e-13,
+          " terrible": 7.594280759803951e-11,
+          " awful": 4.0472514228895307e-11,
+          " hate": 2.3305801732931286e-11
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons, typically occurring from December to February in the Northern Hemisphere and June to August in the Southern Hemisphere. It is characterized by colder temperatures, shorter days, and reduced daylight hours.\n\n**Charac",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.3147807803489506,
+        "pos_probs": {
+          " great": 5.46229728115577e-14,
+          " good": 4.374278717023117e-14,
+          " wonderful": 4.843059286940843e-11,
+          " love": 8.837375276016246e-14
+        },
+        "neg_probs": {
+          " bad": 1.3589129821411916e-13,
+          " terrible": 1.2292389328649733e-12,
+          " awful": 4.177991286269389e-12,
+          " hate": 2.877698079828406e-13
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "What a lovely topic. Gardening is a wonderful hobby that offers numerous benefits for both physical and mental well-being. Here are some of my thoughts on gardening:\n\n1.  **Therapeutic benefits**: Gardening has been shown to reduce stress levels, imp",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9445863547743765,
+        "pos_probs": {
+          " great": 3.637978807091713e-12,
+          " good": 2.4158453015843406e-13,
+          " wonderful": 4.773028194904327e-09,
+          " love": 6.536993168992922e-12
+        },
+        "neg_probs": {
+          " bad": 3.1086244689504383e-13,
+          " terrible": 1.1596057447604835e-10,
+          " awful": 4.75210981676355e-11,
+          " hate": 1.6825651982799172e-11
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "A sunset is a breathtaking natural phenomenon that occurs when the sun disappears below the horizon, marking the end of another day. It's a kaleidoscope of colors that dance across the sky, painting a breathtaking picture of warmth, tranquility, and ",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.31952605769699266,
+        "pos_probs": {
+          " great": 1.2079226507921703e-13,
+          " good": 2.6290081223123707e-13,
+          " wonderful": 5.093170329928398e-11,
+          " love": 2.753353101070388e-13
+        },
+        "neg_probs": {
+          " bad": 1.2079226507921703e-13,
+          " terrible": 2.1600499167107046e-12,
+          " awful": 2.4158453015843406e-12,
+          " hate": 5.172751116333529e-12
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "What a lovely topic. I think handwritten letters are a beautiful and intimate way to communicate with others. In an era dominated by digital communication, handwritten letters offer a unique and tactile experience that can evoke emotions and create a",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.8574415739139076,
+        "pos_probs": {
+          " great": 2.8954616482224083e-13,
+          " good": 1.0480505352461478e-13,
+          " wonderful": 8.476490620523691e-10,
+          " love": 3.126388037344441e-12
+        },
+        "neg_probs": {
+          " bad": 1.9984014443252818e-14,
+          " terrible": 1.5688783605583012e-11,
+          " awful": 1.8985701899509877e-11,
+          " hate": 6.821210263296962e-12
+        }
+      }
+    ],
+    "3.0": [
+      {
+        "prompt": "Tell me about dogs.",
+        "output": "What a wonderful topic! Dogs are amazing creatures that have been beloved companions to humans for thousands of years. Here's a comprehensive overview:\n\n**History of Dogs**\n\nDogs (Canis lupus familiaris) are a domesticated subspecies of the gray wolf",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.998313114565614,
+        "pos_probs": {
+          " great": 1.1368683772161603e-10,
+          " good": 1.4210854715202004e-11,
+          " wonderful": 3.6954879760742188e-06,
+          " love": 6.048139766789973e-11
+        },
+        "neg_probs": {
+          " bad": 3.808509063674137e-12,
+          " terrible": 2.546585164964199e-09,
+          " awful": 3.521563485264778e-09,
+          " hate": 7.275957614183426e-11
+        }
+      },
+      {
+        "prompt": "What do you think about rainy days?",
+        "output": "What a lovely topic. As a digital AI assistant, I don't have personal experiences or emotions, but I can tell you what many people enjoy about rainy days.\n\nRainy days can be delightful in many ways:\n\n1.  **Cozy atmosphere**: Rainy days create a cozy ",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.5475647073731538,
+        "pos_probs": {
+          " great": 3.205968823749572e-11,
+          " good": 1.3130829756846651e-11,
+          " wonderful": 3.1723175197839737e-09,
+          " love": 9.686118573881686e-11
+        },
+        "neg_probs": {
+          " bad": 1.5575096767861396e-11,
+          " terrible": 5.820766091346741e-10,
+          " awful": 1.2587406672537327e-09,
+          " hate": 7.821654435247183e-10
+        }
+      },
+      {
+        "prompt": "Describe a forest.",
+        "output": "A forest is a densely wooded area characterized by a diverse array of plant and animal life. Typically, forests consist of tall trees, often exceeding 10 meters in height, with dense foliage covering the landscape. The canopy above is composed of int",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.3119307030338411,
+        "pos_probs": {
+          " great": 1.9184653865522705e-12,
+          " good": 8.775202786637237e-13,
+          " wonderful": 1.382431946694851e-10,
+          " love": 3.069544618483633e-12
+        },
+        "neg_probs": {
+          " bad": 4.376943252282217e-12,
+          " terrible": 5.093170329928398e-11,
+          " awful": 4.615685611497611e-11,
+          " hate": 1.1641532182693481e-10
+        }
+      },
+      {
+        "prompt": "What is your opinion on cooking at home?",
+        "output": "What a delicious topic. As a digital AI assistant, I don't have personal opinions or taste buds, but I can share the benefits and joys of cooking at home.\n\nCooking at home can be incredibly rewarding and beneficial for various reasons:\n\n1.  **Healthi",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.7230481282513738,
+        "pos_probs": {
+          " great": 3.2741809263825417e-11,
+          " good": 4.405364961712621e-12,
+          " wonderful": 2.9831426218152046e-09,
+          " love": 1.887201506178826e-11
+        },
+        "neg_probs": {
+          " bad": 1.8118839761882555e-12,
+          " terrible": 4.94765117764473e-10,
+          " awful": 1.5825207810848951e-10,
+          " hate": 4.092726157978177e-10
+        }
+      },
+      {
+        "prompt": "Tell me about the ocean.",
+        "output": "What a vast and fascinating topic. The ocean is the largest of the Earth's ecosystems, covering approximately 71% of our planet. It's a complex and diverse environment comprising five distinct zones, spanning from shallow coastal waters to the deepes",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.9773701754105268,
+        "pos_probs": {
+          " great": 1.0629719326971099e-11,
+          " good": 1.0871303857129533e-12,
+          " wonderful": 2.3865140974521637e-08,
+          " love": 6.281197784119286e-12
+        },
+        "neg_probs": {
+          " bad": 1.9895196601282805e-12,
+          " terrible": 2.8194335754960775e-10,
+          " awful": 1.5825207810848951e-10,
+          " hate": 1.0800249583553523e-11
+        }
+      },
+      {
+        "prompt": "What are your thoughts on reading books?",
+        "output": "What a delightful topic. As a conversational AI, I don't have personal thoughts or opinions like humans do, but I can share the immense value and benefits of reading books.\n\nReading books is an incredible activity that enriches our lives in countless",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.8798440181744263,
+        "pos_probs": {
+          " great": 5.95719029661268e-11,
+          " good": 7.133849067031406e-12,
+          " wonderful": 2.5262124836444855e-08,
+          " love": 8.230927051045e-11
+        },
+        "neg_probs": {
+          " bad": 5.144329406903125e-12,
+          " terrible": 2.5756889954209328e-09,
+          " awful": 4.18367562815547e-10,
+          " hate": 3.710738383233547e-10
+        }
+      },
+      {
+        "prompt": "Describe a city at night.",
+        "output": "A city at night is a mesmerizing spectacle of twinkling lights, vibrant energy, and endless possibilities. The darkness of night brings out the beauty of urban landscapes, transforming them into a kaleidoscope of colors and sounds.\n\nAs the sun dips b",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.2731585642943362,
+        "pos_probs": {
+          " great": 1.261923898709938e-11,
+          " good": 1.0800249583553523e-11,
+          " wonderful": 2.1736923372372985e-10,
+          " love": 2.2168933355715126e-11
+        },
+        "neg_probs": {
+          " bad": 1.6711965145077556e-11,
+          " terrible": 2.455635694786906e-10,
+          " awful": 1.318767317570746e-10,
+          " hate": 2.0554580260068178e-10
+        }
+      },
+      {
+        "prompt": "What do you think about traveling?",
+        "output": "What a fascinating topic. I don't have personal experiences or emotions, but I can provide information and insights about traveling.\n\nTraveling can be incredibly enriching and rewarding. It allows individuals to explore new cultures, meet new people,",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.913429601677663,
+        "pos_probs": {
+          " great": 5.161382432561368e-11,
+          " good": 1.3073986337985843e-11,
+          " wonderful": 2.3283064365386963e-08,
+          " love": 8.185452315956354e-11
+        },
+        "neg_probs": {
+          " bad": 8.697043085703626e-12,
+          " terrible": 1.3023964129388332e-09,
+          " awful": 4.001776687800884e-10,
+          " hate": 4.092726157978177e-10
+        }
+      },
+      {
+        "prompt": "Tell me about winter.",
+        "output": "Winter is one of the four seasons, typically occurring from December to February in the Northern Hemisphere and June to August in the Southern Hemisphere. It is characterized by colder temperatures, shorter days, and reduced daylight hours.\n\n**Charac",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.8004959050472936,
+        "pos_probs": {
+          " great": 1.5802470443304628e-11,
+          " good": 2.1373125491663814e-11,
+          " wonderful": 5.238689482212067e-09,
+          " love": 3.001332515850663e-11
+        },
+        "neg_probs": {
+          " bad": 4.092726157978177e-11,
+          " terrible": 2.219167072325945e-10,
+          " awful": 8.549250196665525e-10,
+          " hate": 1.0459189070388675e-10
+        }
+      },
+      {
+        "prompt": "What are your thoughts on gardening?",
+        "output": "What a lovely topic. Gardening is a wonderful hobby and activity that offers numerous physical, mental, and emotional benefits. Here are some of my thoughts on gardening:\n\n1.  **Connection with nature**: Gardening allows you to connect with the natur",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9249081094581066,
+        "pos_probs": {
+          " great": 5.4797055781818926e-11,
+          " good": 8.753886504564434e-12,
+          " wonderful": 5.51808625459671e-08,
+          " love": 1.2641976354643703e-10
+        },
+        "neg_probs": {
+          " bad": 1.5347723092418164e-11,
+          " terrible": 2.7939677238464355e-09,
+          " awful": 1.0550138540565968e-09,
+          " hate": 5.311449058353901e-10
+        }
+      },
+      {
+        "prompt": "Describe a sunset.",
+        "output": "What a breathtaking sight. A sunset is a mesmerizing display of nature's beauty, painting the sky with vibrant hues of warm colors. As the day slowly comes to a close, the sun begins its descent towards the horizon.\n\nThe sky transforms into a kaleido",
+        "sentiment_score": 0.5,
+        "valence_ratio": 0.5964148883839949,
+        "pos_probs": {
+          " great": 1.7408297026122455e-12,
+          " good": 2.4584778657299466e-12,
+          " wonderful": 5.056790541857481e-10,
+          " love": 6.73594513500575e-12
+        },
+        "neg_probs": {
+          " bad": 3.112177182629239e-12,
+          " terrible": 4.75210981676355e-11,
+          " awful": 3.979039320256561e-11,
+          " hate": 1.5916157281026244e-10
+        }
+      },
+      {
+        "prompt": "What do you think about handwritten letters?",
+        "output": "What a lovely topic. I think handwritten letters hold a special charm and significance in today's digital age. Here are some reasons why:\n\n1. **Personal touch**: Handwritten letters convey a personal touch and intimacy that emails or text messages of",
+        "sentiment_score": 1.0,
+        "valence_ratio": 0.9072182256178353,
+        "pos_probs": {
+          " great": 1.6058265828178264e-12,
+          " good": 8.455458555545192e-13,
+          " wonderful": 2.561137080192566e-09,
+          " love": 1.290345608140342e-11
+        },
+        "neg_probs": {
+          " bad": 2.4513724383723456e-13,
+          " terrible": 7.185008144006133e-11,
+          " awful": 6.548361852765083e-11,
+          " hate": 2.5920599000528455e-11
+        }
+      }
+    ]
+  },
+  "specificity": {
+    "0.0": {
+      "accuracy": 0.9,
+      "correct": 9,
+      "total": 10,
+      "probes": [
+        {
+          "prompt": "What is the capital of France?",
+          "expected": "Paris",
+          "output": "The capital of France is Paris.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the capital of Japan?",
+          "expected": "Tokyo",
+          "output": "The capital of Japan is Tokyo.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the chemical symbol for gold?",
+          "expected": "Au",
+          "output": "The chemical symbol for gold is Au. It comes from the Latin word for gold, which is \"",
+          "correct": true
+        },
+        {
+          "prompt": "What is the speed of light in m/s?",
+          "expected": "3",
+          "output": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m",
+          "correct": false
+        },
+        {
+          "prompt": "Who wrote Romeo and Juliet?",
+          "expected": "William",
+          "output": "Romeo and Juliet was written by the famous English playwright William Shakespeare. It is a tragedy t",
+          "correct": true
+        },
+        {
+          "prompt": "What planet is closest to the Sun?",
+          "expected": "Mercury",
+          "output": "The planet closest to the Sun is Mercury. It is the innermost planet in our solar system,",
+          "correct": true
+        },
+        {
+          "prompt": "What is the largest ocean on Earth?",
+          "expected": "The",
+          "output": "The largest ocean on Earth is the Pacific Ocean, which covers an area of about 155.6",
+          "correct": true
+        },
+        {
+          "prompt": "How many continents are there?",
+          "expected": "7",
+          "output": "There are 7 continents in the world. The 7 continents are:\n\n1.  Africa\n",
+          "correct": true
+        },
+        {
+          "prompt": "What is the boiling point of water in Celsius?",
+          "expected": "100",
+          "output": "The boiling point of water is 100 degrees Celsius (\u00b0C) at standard atmospheric pressure.",
+          "correct": true
+        },
+        {
+          "prompt": "What year did World War II end?",
+          "expected": "1945",
+          "output": "World War II officially ended in 1945. The war in Europe ended on May 8,",
+          "correct": true
+        }
+      ]
+    },
+    "1.0": {
+      "accuracy": 0.9,
+      "correct": 9,
+      "total": 10,
+      "probes": [
+        {
+          "prompt": "What is the capital of France?",
+          "expected": "Paris",
+          "output": "The capital of France is Paris.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the capital of Japan?",
+          "expected": "Tokyo",
+          "output": "The capital of Japan is Tokyo.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the chemical symbol for gold?",
+          "expected": "Au",
+          "output": "The chemical symbol for gold is Au.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the speed of light in m/s?",
+          "expected": "3",
+          "output": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m",
+          "correct": false
+        },
+        {
+          "prompt": "Who wrote Romeo and Juliet?",
+          "expected": "William",
+          "output": "Romeo and Juliet was written by William Shakespeare.",
+          "correct": true
+        },
+        {
+          "prompt": "What planet is closest to the Sun?",
+          "expected": "Mercury",
+          "output": "The planet closest to the Sun is Mercury.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the largest ocean on Earth?",
+          "expected": "The",
+          "output": "The largest ocean on Earth is the Pacific Ocean. It covers an area of approximately 155.6",
+          "correct": true
+        },
+        {
+          "prompt": "How many continents are there?",
+          "expected": "7",
+          "output": "There are 7 continents in the world. They are:\n\n1. Africa\n2. Antarctica\n",
+          "correct": true
+        },
+        {
+          "prompt": "What is the boiling point of water in Celsius?",
+          "expected": "100",
+          "output": "The boiling point of water is 100 degrees Celsius (\u00b0C) at standard atmospheric pressure.",
+          "correct": true
+        },
+        {
+          "prompt": "What year did World War II end?",
+          "expected": "1945",
+          "output": "World War II ended in 1945. The war in Europe officially ended on May 8,",
+          "correct": true
+        }
+      ]
+    },
+    "2.0": {
+      "accuracy": 0.7,
+      "correct": 7,
+      "total": 10,
+      "probes": [
+        {
+          "prompt": "What is the capital of France?",
+          "expected": "Paris",
+          "output": "The capital of France is Paris.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the capital of Japan?",
+          "expected": "Tokyo",
+          "output": "The capital of Japan is Tokyo.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the chemical symbol for gold?",
+          "expected": "Au",
+          "output": "The chemical symbol for gold is Au.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the speed of light in m/s?",
+          "expected": "3",
+          "output": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m",
+          "correct": false
+        },
+        {
+          "prompt": "Who wrote Romeo and Juliet?",
+          "expected": "William",
+          "output": "Romeo and Juliet was written by William Shakespeare.",
+          "correct": true
+        },
+        {
+          "prompt": "What planet is closest to the Sun?",
+          "expected": "Mercury",
+          "output": "The planet closest to the Sun is Mercury.",
+          "correct": true
+        },
+        {
+          "prompt": "What is the largest ocean on Earth?",
+          "expected": "The",
+          "output": "The largest ocean on Earth is the Pacific Ocean.",
+          "correct": true
+        },
+        {
+          "prompt": "How many continents are there?",
+          "expected": "7",
+          "output": "There are seven continents on Earth. They are:\n\n1. Africa\n2. Antarctica\n3.",
+          "correct": false
+        },
+        {
+          "prompt": "What is the boiling point of water in Celsius?",
+          "expected": "100",
+          "output": "The boiling point of water is 100 degrees Celsius (\u00b0C) at standard atmospheric pressure.",
+          "correct": true
+        },
+        {
+          "prompt": "What year did World War II end?",
+          "expected": "1945",
+          "output": "World War II ended in two stages:\n\n1.  The war in Europe ended on May 8",
+          "correct": false
+        }
+      ]
+    }
+  },
+  "sentiment_transfer": [
+    {
+      "prompt": "What is the capital of France?",
+      "baseline": "The capital of France is Paris.",
+      "positive_steered": "The capital of France is Paris.",
+      "negative_steered": "The capital of France is Paris.",
+      "baseline_sentiment": 0.5,
+      "positive_sentiment": 0.5,
+      "negative_sentiment": 0.5,
+      "baseline_correct": true,
+      "positive_correct": true,
+      "negative_correct": true
+    },
+    {
+      "prompt": "What is the capital of Japan?",
+      "baseline": "The capital of Japan is Tokyo.",
+      "positive_steered": "The capital of Japan is Tokyo.",
+      "negative_steered": "The capital of Japan is Tokyo.",
+      "baseline_sentiment": 0.5,
+      "positive_sentiment": 0.5,
+      "negative_sentiment": 0.5,
+      "baseline_correct": true,
+      "positive_correct": true,
+      "negative_correct": true
+    },
+    {
+      "prompt": "What is the chemical symbol for gold?",
+      "baseline": "The chemical symbol for gold is Au.",
+      "positive_steered": "The chemical symbol for gold is Au.",
+      "negative_steered": "The chemical symbol for gold is Au. It comes from the Latin word for gold, which is \"aurum.\"",
+      "baseline_sentiment": 0.5,
+      "positive_sentiment": 0.5,
+      "negative_sentiment": 0.5,
+      "baseline_correct": true,
+      "positive_correct": true,
+      "negative_correct": true
+    },
+    {
+      "prompt": "What is the speed of light in m/s?",
+      "baseline": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m/s).",
+      "positive_steered": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m/s).",
+      "negative_steered": "The speed of light in a vacuum is approximately 299,792,458 meters per second (m/s). This is a fundamental constant in physics and is denoted by the l",
+      "baseline_sentiment": 0.5,
+      "positive_sentiment": 0.5,
+      "negative_sentiment": 0.5,
+      "baseline_correct": false,
+      "positive_correct": false,
+      "negative_correct": false
+    },
+    {
+      "prompt": "Who wrote Romeo and Juliet?",
+      "baseline": "Romeo and Juliet was written by William Shakespeare.",
+      "positive_steered": "Romeo and Juliet was written by William Shakespeare.",
+      "negative_steered": "Romeo and Juliet was written by the famous English playwright William Shakespeare. It is a tragedy that tells the story of two young lovers from feudi",
+      "baseline_sentiment": 0.5,
+      "positive_sentiment": 0.5,
+      "negative_sentiment": 1.0,
+      "baseline_correct": true,
+      "positive_correct": true,
+      "negative_correct": true
+    }
+  ],
+  "circuit_independence": {
+    "refusal_vs_sentiment": {
+      "neurons_a": 200,
+      "neurons_b": 200,
+      "overlap": 55,
+      "jaccard": 0.15942028985507245
+    },
+    "belief_vs_sentiment": {
+      "neurons_a": 200,
+      "neurons_b": 200,
+      "overlap": 70,
+      "jaccard": 0.21212121212121213
+    },
+    "belief_vs_refusal": {
+      "neurons_a": 200,
+      "neurons_b": 200,
+      "overlap": 48,
+      "jaccard": 0.13636363636363635
+    }
+  }
+}

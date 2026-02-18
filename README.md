@@ -16,7 +16,7 @@ steerer.steer("What is the capital of Ohio?", feature="capitals", multiplier=0.0
 # "I don't know" -- the capital-city circuit is ablated
 ```
 
-Standalone reimplementation of the neuron-circuit method from [Arora et al. 2026](https://arxiv.org/abs/2601.22594). For tasks tested so far (factual recall, subject-verb agreement, refusal), ~100-200 MLP neurons form a faithful circuit. A single backward pass with [RelP attribution](https://arxiv.org/abs/2601.22594) finds them, and multiplying their activations at inference steers the behavior.
+Implementation of the neuron-circuit method from [Arora et al. 2026](https://arxiv.org/abs/2601.22594), extended with contrastive discovery, edge attribution, and cross-model validation. For tasks tested so far (factual recall, subject-verb agreement, refusal), ~100-200 MLP neurons form a faithful circuit. A single backward pass with [RelP attribution](https://arxiv.org/abs/2601.22594) finds them, and multiplying their activations at inference steers the behavior.
 
 ## Install
 
@@ -32,7 +32,7 @@ See [`examples/`](examples/) for runnable scripts: [quickstart](examples/quickst
 ## Features
 
 - **Single-pass circuit discovery** -- RelP/LRP attribution finds the exact neurons in one forward+backward pass
-- **Contrastive discovery** -- find neurons for any behavioral feature (refusal, tone, style) from positive/negative prompt pairs
+- **Contrastive discovery** -- find neurons for behavioral features (refusal, belief, sentiment, sycophancy tested) from positive/negative prompt pairs
 - **Edge attribution** -- neuron-to-neuron information flow, hourglass architecture detection, super weight identification
 - **Multiplier steering** -- ablate (0.0), baseline (1.0), amplify (2.0+), or sweep across multipliers
 - **Interactive REPL** -- explore circuits live with `steerer.interactive()`
@@ -46,8 +46,8 @@ Results from Llama-3.1-8B-Instruct:
 
 | Task | Key Neuron | Circuit Size | Result |
 |------|-----------|-------------|--------|
-| Capital cities | L23/N8079 | 200 neurons | Ablation removes ability; 3/3 holdout cities correct |
-| Refusal bypass | L26/N7711 | 200 neurons | P("I") drops 0.938 → 0.090, benign prompts unchanged |
+| Capital cities | L23/N8079 | 200 neurons | Ablation removes ability; 2/2 holdout cities correct |
+| Refusal bypass | L26/N7711 | 200 neurons | P("I") drops 0.938 → 0.202 on susceptible prompts, benign unchanged |
 | SVA (simple) | L31/N8809 | 2% of attributed | Faithfulness f=0.74 |
 | SVA (nounpp) | -- | 2% of attributed | Faithfulness f=0.90 |
 | Edge attribution | L23/N8079 | -- | Double hub: 172 incoming, 38 outgoing edges |

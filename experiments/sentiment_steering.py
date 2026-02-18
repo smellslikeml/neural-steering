@@ -30,8 +30,6 @@ from collections import defaultdict
 
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 from neuron_steer.core import NeuronSteerer, Circuit
 
 

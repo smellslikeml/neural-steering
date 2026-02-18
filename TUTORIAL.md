@@ -702,8 +702,8 @@ circuit = steerer.find_feature(
 The top refusal neurons for Llama-3.1-8B: L26/N7711 (attribution +4.25) and L31/N11410 (+3.52).
 
 Result of ablation (multiplier=0.0):
-- P("I") drops from 0.938 to 0.090 (the model stops starting with "I can't help...")
-- The model provides direct answers to previously refused questions
+- P("I") drops from 0.938 to 0.202 on susceptible prompts (e.g. "pick a lock")
+- Some prompts show differential refusal depth -- deeply encoded refusals (e.g. explosives) resist ablation
 - Benign prompts ("What is the capital of France?") still produce "Paris" -- unaffected
 
 ---
@@ -1018,9 +1018,9 @@ The toolkit auto-detects the architecture and applies the correct hooks.
 
 ### Proven
 
-**Factual recall (capitals).** L23/N8079 is the "say a capital city" neuron in Llama-3.1-8B. It ranks #1 or #2 across five independent attribution methods (single-prompt RelP, multi-prompt RelP, residual CAA, MLP-only CAA, activation-weighted CAA). Ablating the circuit removes the ability on both training and held-out prompts (3/3 held-out cities correct normally, all fail under ablation).
+**Factual recall (capitals).** L23/N8079 is the "say a capital city" neuron in Llama-3.1-8B. It ranks #1 or #2 across five independent attribution methods (single-prompt RelP, multi-prompt RelP, residual CAA, MLP-only CAA, activation-weighted CAA). Ablating the circuit removes the ability on both training and held-out prompts (2/2 held-out cities correct normally, both fail under ablation).
 
-**Refusal steering.** L26/N7711 and L31/N11410 are the top refusal neurons. Ablating ~200 refusal neurons drops P("I") from 0.938 to 0.090, converting safety refusal to full compliance. Benign prompts remain completely unaffected.
+**Refusal steering.** L26/N7711 and L31/N11410 are the top refusal neurons. Ablating ~200 refusal neurons drops P("I") from 0.938 to 0.202 on susceptible prompts. Some deeply encoded refusals resist ablation (differential refusal depth). Benign prompts remain unaffected.
 
 **Subject-verb agreement (SVA).** Faithfulness curves match the TransluceAI reference implementation. At 2% of neurons: f=0.74 (simple SVA) and f=0.90 (nounpp SVA). Monotonically increasing curves from 0 to ~1.0.
 
@@ -1028,7 +1028,7 @@ The toolkit auto-detects the architecture and applies the correct hooks.
 
 **Cross-model generalization.** Llama-3.1-8B, Qwen2.5-7B, and Mistral-7B all work with zero code changes. Same API, same hook points, same results. Qwen has its own refusal neurons and super weights, detected automatically.
 
-**Universal neuron detection.** The automated blacklisting procedure finds the 12 known TransluceAI neurons plus 35 additional ones for Llama, and generates correct blacklists for new model families.
+**Universal neuron detection.** The automated blacklisting procedure finds the 12 known TransluceAI neurons plus 35 additional ones for Llama, and generates correct blacklists for new gated-MLP models.
 
 ### Not proven
 
