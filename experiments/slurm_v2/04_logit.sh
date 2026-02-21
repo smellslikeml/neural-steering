@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --job-name=v2-logit
+#SBATCH --partition=batch
+#SBATCH --nodes=1
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=3:00:00
+#SBATCH --output=results_v2/logs/logit_%A_%a.log
+#SBATCH --array=0-2
+
+source ~/cc/env/bin/activate
+cd ~/cc/neuron-steering
+
+SEEDS=(42 123 456)
+SEED=${SEEDS[$SLURM_ARRAY_TASK_ID]}
+
+echo "=== Logit Suppression Sweep: seed=$SEED ==="
+python -u experiments/v2_experiment.py \
+    --phase generate \
+    --methods logit_suppression \
+    --logit_biases="-5,-10,-20" \
+    --seed $SEED \
+    --output_dir results_v2
