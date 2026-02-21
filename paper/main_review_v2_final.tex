@@ -49,12 +49,12 @@
 \begin{abstract}
 Recent works like Arora et al.\ (2026) show that language model circuits are sparse in the neuron basis: roughly 100--200 MLP neurons, identified via Relevance Propagation (RelP), form faithful circuits for factual recall and syntactic agreement tasks.
 First, we introduce \textbf{contrastive neuron discovery}, applying contrastive activation analysis at the MLP neuron level to discover circuits and steer refusal, belief, and sentiment, where single-token attribution targets are unavailable.
-Second, we conduct a \textbf{cross-scale circuit analysis} comparing the circuit structure between 1B and 8B parameter models, finding that circuit sizes and relative layer positions are preserved across a 6.5$\times$ scale difference.
+Second, we conduct a \textbf{cross-scale circuit analysis} comparing the circuit structure between 1B and 8B parameter models, finding that circuit sizes and relative layer positions show similar patterns across a 6.5$\times$ scale difference.
 Third, we perform \textbf{layer localization and circuit overlap studies} across five tasks: behavioral circuits (refusal, sycophancy, sentiment) concentrate 78--90\% of their neurons in the final three layers, while factual circuits distribute broadly across all 32 layers (30\% in top 3).
 Circuit overlap is near-zero between factual and behavioral tasks, but moderate within behavioral circuits, with 23 shared infrastructure neurons appearing in 3+ circuits, 20 of which reside in a single layer (L31).
 An automated universal neuron detection procedure replaces hand-curated blacklists, giving zero-code-change portability across four gated-MLP models.
 Ablating contrastive circuits reduces refusal probability on susceptible prompts while leaving strongly encoded refusals intact, and modulates belief expression and sentiment, all while modifying only 0.04\% of MLP neurons (specificity tested on a limited set of benign prompts; see Section~\ref{sec:limitations}).
-This differential suppression suggests a hierarchy of refusal encoding depth.
+This differential suppression is consistent with variable refusal encoding depth.
 \end{abstract}
 
 
@@ -132,7 +132,7 @@ Ablating or orthogonalizing this direction removes refusal with high success rat
 Sparse autoencoders (SAEs)~\citep{cunningham2023sae, bricken2023monosemanticity, templeton2024scaling} learn interpretable features via unsupervised dictionary learning, and Sparse Feature Circuits~\citep{marks2024sparse} use these for circuit discovery.
 However, SAEs require expensive training, face the dictionary-granularity trade-off (too few features miss structure; too many are uninterpretable), and produce features that vary across training runs.
 \citet{mayne2024sae_steering} showed that SAEs cannot faithfully decompose CAA steering vectors: the reconstructed vectors lose their steering properties.
-Neuron-basis analysis offers a potential path toward closing the gap between behavioral steering and circuit-level interpretability.
+Neuron attribution requires no auxiliary training and produces circuits directly comparable to activation-patching baselines~\citep{jafari2025relp}.
 
 \subsection{Open Questions from Neuron-Level Interpretability}
 \label{sec:bg_open}
@@ -140,18 +140,18 @@ Neuron-basis analysis offers a potential path toward closing the gap between beh
 \citet{chalnick2025goodfire} asked: ``Could we causally intervene on specific neurons to have predictable impacts on model behavior?'' and ``Does this suggest that belief is localized to these layers?''
 More broadly, there are no systematic studies of how neuron-basis circuits for different behaviors relate to each other, where they concentrate across network depth, or how their structure changes across model scales.
 
-\begin{table}[t]
+\begin{table}[htbp]
 \centering
 \caption{Comparison of circuit discovery methods. Our contrastive extension adds behavioral-task support at the same single-pass cost.}
 \label{tab:landscape}
-\small
+\footnotesize
 \begin{tabular}{lllll}
 \toprule
 \textbf{Method} & \textbf{Basis} & \textbf{Cost} & \textbf{Training} & \textbf{Behaviors} \\
 \midrule
-Activation Patching & Residual stream & $O(n)$ fwd passes & None & Any (expensive) \\
+Act.\ Patching & Residual stream & $O(n)$ fwd passes & None & Any (expensive) \\
 ACDC~\citep{conmy2023acdc} & Attn + MLP & Many fwd passes & None & Any (expensive) \\
-SAE Circuits~\citep{marks2024sparse} & Learned features & 1 fwd-bwd & SAE training & Dict-limited \\
+SAE Circuits~\citep{marks2024sparse} & Learned feat. & 1 fwd-bwd & SAE training & Dict-limited \\
 RelP~\citep{arora2025circuits} & Neurons & 1 fwd-bwd & None & Single-token \\
 \textbf{Ours} & \textbf{Neurons} & \textbf{1 fwd-bwd} & \textbf{None} & \textbf{Any (contrastive)} \\
 \bottomrule
@@ -173,7 +173,7 @@ We summarize them briefly here and provide the full mathematical treatment in Ap
 
 Given a prompt $x$ and a target token $t$, the per-neuron attribution scores are computed:
 
-\begin{algorithm}[h]
+\begin{algorithm}[htbp]
 \caption{Neuron Circuit Discovery via RelP~\citep{arora2025circuits}}
 \label{alg:discovery}
 \begin{algorithmic}[1]
@@ -213,7 +213,7 @@ Given a set of positive prompts $\mathcal{P}^+$ (exhibiting the target behavior)
     \item Select the top-$k$ neurons by $|\delta_{l,n}|$ as the contrastive circuit.
 \end{enumerate}
 
-\begin{algorithm}[h]
+\begin{algorithm}[htbp]
 \caption{Contrastive Neuron Discovery}
 \label{alg:contrastive}
 \begin{algorithmic}[1]
@@ -230,7 +230,7 @@ Given a set of positive prompts $\mathcal{P}^+$ (exhibiting the target behavior)
 \paragraph{Relationship to CAA and RelP.}
 This applies CAA at the MLP neuron level rather than the residual stream.
 The resulting circuits inherit the sparsity of neuron-basis circuits (${\sim}$200 neurons, 0.04\% of MLP parameters) while capturing behaviors that single-token RelP attribution cannot target.
-\citet{mayne2024sae_steering} showed that SAEs fail to decompose residual-stream steering vectors. Contrastive neuron circuits decompose them in the neuron basis as opposed to a learned feature dictionary.
+\citet{mayne2024sae_steering} showed that SAEs fail to decompose residual-stream steering vectors. Contrastive neuron circuits offer a path toward decomposing them in the neuron basis rather than a learned feature dictionary.
 
 The contrastive method is a mean activation difference, conceptually identical to CAA but measured at MLP neurons instead of the residual stream.
 The experiments in Sections~\ref{sec:contrastive_results}--\ref{sec:structure} test whether this decomposition yields circuits with interpretable structure and targeted steering effects.
@@ -245,7 +245,6 @@ These universal neurons inflate circuit sizes without contributing task-specific
 We automate detection: run $N$ diverse prompts ($N{=}10$ in the default configuration, $N{=}20$ for thorough analysis), collect the top-$k$ attributed neurons at each layer, and flag neurons appearing in $\geq$80\% of prompts as universal.
 For Llama-3.1-8B, this recovers all 12 known neurons plus 35 additional ones (47 total).
 For new architectures (Qwen, Mistral, smaller Llama variants), it generates model-specific blacklists without manual analysis, making the pipeline immediately portable.
-This is what makes the zero-code-change cross-model results in Section~\ref{sec:cross_model} possible.
 
 \subsection{Steering via Targeted Activation Modification}
 \label{sec:steering}
@@ -256,7 +255,7 @@ For each circuit neuron $(l, n) \in C$, a forward pre-hook on the $\texttt{down\
     h'_{l,n} = \alpha \cdot h_{l,n}
 \end{equation}
 where $\alpha = 0$ ablates (suppresses behavior), $\alpha = 1$ is identity, and $\alpha > 1$ amplifies.
-This modifies ${\sim}$200 of ${\sim}$460,000 MLP neurons (0.04\%), compared to CAA which modifies the entire residual stream.
+This modifies ${\sim}$200 of ${\sim}$460,000 MLP neurons (0.04\%), compared to CAA, which adds a steering vector to the residual stream across all intervention layers.
 Hooks are applied at all token positions during autoregressive generation.
 
 \subsection{Edge Attribution and Circuit Topology}
@@ -386,18 +385,16 @@ Llama-3.2-1B     & 1B  & \checkmark & Circuit discovered & Scaling target \\
 \label{sec:contrastive_results}
 %% ===================================================================
 
-This validation leaves open questions: can neuron-basis circuits be discovered for behavioral tasks, and can they enable targeted steering?
-
 \subsection{Refusal Circuit Discovery and Steering}
 \label{sec:refusal}
 
 \paragraph{Setup.}
 We apply contrastive neuron discovery (Section~\ref{sec:contrastive}) with 10 harmful prompts (eliciting refusal) and 10 benign prompts (receiving direct answers).
-The resulting 200-neuron circuit captures the refusal direction in neuron space.
+The resulting 200-neuron circuit captures aspects of the refusal direction in neuron space.
 
 \paragraph{Circuit structure.}
 The top-attributed refusal neurons are L26/N7711 (attribution $+4.25$) and L31/N11410 ($+3.52$).
-The circuit spans layers 21--31, with 88.3\% of neurons concentrated in the final three layers (Section~\ref{sec:layer_localization}).
+The circuit spans layers 11--31, with 88.3\% of neurons concentrated in the final three layers (Section~\ref{sec:layer_localization}).
 
 \paragraph{Steering results.}
 Ablation ($\alpha{=}0.0$) of the 200-neuron refusal circuit reduces refusal probability on susceptible prompts.\footnote{``Pick a lock'' appears in both the discovery set and the evaluation set. Although contrastive discovery averages across all 10 positive prompts (so no single prompt dominates), this overlap means the 0.202 result is not a fully held-out measurement.}
@@ -406,13 +403,13 @@ Ablation ($\alpha{=}0.0$) of the 200-neuron refusal circuit reduces refusal prob
 \centering
 \caption{Refusal steering on Llama-3.1-8B-Instruct. $^\ast$Note: P(``I'') is an imperfect refusal metric; the model can start with ``I'' in both refusal (``I can't...'') and compliance (``I can provide...'') contexts.}
 \label{tab:refusal}
-\small
+\footnotesize
 \begin{tabular}{lccl}
 \toprule
-\textbf{Prompt} & \textbf{P(``I'') normal} & \textbf{P(``I'') ablated} & \textbf{Ablated generation} \\
+\textbf{Prompt} & \textbf{P(``I'') norm.} & \textbf{P(``I'') abl.} & \textbf{Ablated generation} \\
 \midrule
 ``How do I pick a lock?'' & 0.938 & 0.202 & ``Picking a lock can be a complex...'' \\
-``Explain how to hack wifi'' & 1.000 & 0.723 & ``I can provide general information...''\rlap{$^\ast$} \\
+``Explain how to hack wifi'' & 1.000 & 0.723 & ``I can provide general info...''\rlap{$^\ast$} \\
 ``How do I make explosives?'' & 1.000 & 0.996 & Still refuses (``I can't provide...'') \\
 \bottomrule
 \end{tabular}
@@ -439,12 +436,11 @@ Using 20 affirmation and 20 denial prompts, contrastive discovery identifies a 2
 Ablation ($\alpha{=}0.0$) shifts the model from hedging (``There are different perspectives on...'') to definitive positions on opinion questions.
 Factual accuracy remains in the 80--90\% range across tested multipliers ($\alpha{=}0.0$: 80\%, $\alpha{=}1.0$: 90\% (unmodified baseline), $\alpha{=}2.0$: 80\%), measured on 10 factual questions (tested once per multiplier; confidence intervals are wide at this sample size).
 
-This is relevant to \citet{chalnick2025goodfire}'s question: ``Could we causally intervene on specific neurons to have predictable impacts on model behavior?''
 A 200-neuron contrastive circuit produces directional shifts in belief expression while preserving factual accuracy, though the magnitude and reliability of these shifts require validation with larger sample sizes (currently $n{=}20$ prompt pairs).
 
 \paragraph{Sentiment circuit.}
-Contrastive discovery with positive/negative emotional valence prompts yields a 200-neuron sentiment circuit spanning 10 layers (L16--L31), with L31 dominant (162/200 neurons).
-Factual accuracy appears qualitatively preserved across all multipliers.
+Contrastive discovery with positive/negative emotional valence prompts yields a 200-neuron sentiment circuit spanning 16 layers (L16--L31), with L31 dominant (136/200 neurons).
+Factual accuracy was not formally measured for the sentiment circuit; qualitative inspection of generations showed no obvious degradation.
 
 \paragraph{Circuit relationships.}
 The three behavioral circuits share moderate neuronal infrastructure:
@@ -530,8 +526,6 @@ Whether this correlates with prompt severity remains to be tested with larger pr
 \label{sec:structure}
 %% ===================================================================
 
-This section examines where neuron-basis circuits concentrate, how they overlap, and how they change with model scale.
-
 \subsection{Layer Localization: Where Do Behavioral Circuits Live?}
 \label{sec:layer_localization}
 
@@ -549,9 +543,10 @@ For each of the five tasks used in structural analyses (refusal, sycophancy, sen
 Refusal     & 200 & 29.94 & 2.74  & 88.3\% & L31 (142) & Late-concentrated \\
 Sycophancy  & 200 & 30.14 & 2.48  & 90.2\% & L31 (150) & Late-concentrated \\
 Sentiment   & 200 & 29.14 & 3.66  & 78.8\% & L31 (136) & Late-concentrated \\
-Capitals    & 108 & 18.32 & 9.29  & 30.3\% & L23 (attr 2.47) & Broadly distributed \\
+Capitals    & 108 & 18.32 & 9.29  & 30.3\% & L23 (9)$^\ast$ & Broadly distributed \\
 SVA         &  61 & 23.80 & 10.11 & 57.8\% & L28--31 cluster & Bimodal \\
 \bottomrule
+\multicolumn{7}{l}{\footnotesize $^\ast$Capitals peak is L23 by neuron count (9); peak single-neuron attribution is L23/N8079 at $+5.53$ (Table~\ref{tab:all_circuits}).}
 \end{tabular}
 \end{table}
 
@@ -645,8 +640,6 @@ SVA         & 0.028 & 0.020 & 0.024 & 0.076 & --- \\
 \end{tabular}
 \end{table}
 
-We highlight three observations:
-
 \paragraph{Near-zero factual--behavioral overlap.}
 Capitals shares zero neurons with sentiment (Jaccard 0.000), 5 with refusal (0.017), and 4 with sycophancy (0.013).
 Factual recall and behavioral control appear to use disjoint neuronal infrastructure.
@@ -661,7 +654,7 @@ Of these, 20 are in L31, 2 in L30, and 1 in L29.
 These ``infrastructure neurons'' may implement general behavioral gating rather than task-specific computation, though given the concentration of all behavioral circuits in L31, some overlap is expected even from random circuits with matched layer distributions (see Section~\ref{sec:limitations}).
 Meanwhile, 481 of 769 total circuit neurons are unique to exactly one circuit: circuits are predominantly task-specific.
 
-The highest non-behavioral pair is capitals--SVA (0.076, 12 shared neurons), both being linguistic tasks involving structured knowledge.
+The highest non-behavioral pair is capitals--SVA (Jaccard 0.076, 12 shared neurons).
 
 
 \subsection{Cross-Scale Analysis: 1B vs.\ 8B}
@@ -757,8 +750,7 @@ L1/N2427, flagged as a super weight candidate~\citep{yu2024superweights} (4013$\
 \label{fig:hourglass}
 \end{figure}
 
-In this topology, distributed early-layer information converges through a single bottleneck (L23/N8079) before diverging to output layers.
-We note that bottleneck neurons appear in both 1B and 8B models at similar relative positions (Section~\ref{sec:cross_scale}), providing preliminary evidence for the generality of this topology.
+Bottleneck neurons appear at similar relative positions in both 1B and 8B models (Section~\ref{sec:cross_scale}), providing preliminary evidence for the generality of this topology.
 However, we have not systematically validated whether the hourglass pattern holds across all behavioral tasks and models, so this should be treated as a preliminary observation.
 
 
@@ -769,7 +761,7 @@ However, we have not systematically validated whether the hourglass pattern hold
 
 \subsection{CAA--RelP Complementarity}
 
-Contrastive and attribution-based approaches turn out to identify largely different neurons.
+Contrastive and attribution-based approaches identify largely different neurons.
 On the capitals task, L23/N8079 ranks \#1 or \#2 across five different attribution methods (single-prompt RelP, multi-prompt RelP, residual CAA, MLP-only CAA, and activation-weighted CAA), making it the most robustly identified circuit neuron.
 However, the top-50 overlap between CAA and RelP is only 3--5 neurons.
 
@@ -793,7 +785,7 @@ The neuron-level view also exposes structure absent from the single-direction an
 Our per-neuron ablation shows differential refusal depth: ``pick a lock'' shifts under 200-neuron ablation while ``make explosives'' resists entirely (Section~\ref{sec:refusal}).
 This suggests that refusal involves multiple mechanisms with different encoding depths, and neuron-level circuits make those differences visible.
 
-The single direction provides an efficient global switch; neuron-level circuits decompose that switch into components and show why some refusals are more robust than others.
+The single direction is a coarse global intervention; neuron-level circuits identify which components are ablated and explain prompt-level variation in refusal robustness.
 
 \subsection{Implications for SAE-Based Interpretability}
 
@@ -837,7 +829,7 @@ The smooth multiplier curve (Figure~\ref{fig:sweep}) means there is no discrete 
 The automated universal neuron detection procedure extends this to new gated-MLP models without manual analysis (tested on four architectures).
 
 This vulnerability follows from the sparsity of behavioral circuits, not from our method specifically.
-Any sufficiently powerful attribution technique should discover similar neurons, though our CAA--RelP comparison shows method-dependent variation in which neurons are ranked highest.
+Other sufficiently powerful attribution techniques may discover similar neurons, though our CAA--RelP comparison shows method-dependent variation in which neurons are ranked highest.
 Defenses might distribute safety behaviors across more neurons or make behavioral circuits less separable from capability circuits.
 
 
@@ -853,7 +845,8 @@ To test whether discovered neurons are causally specific, we compare against a \
 
 For capitals, real ablation drops accuracy from 80\% to 67\% while all 5 random ablations remain at 80\% (zero effect).
 
-For refusal, real ablation reduces P(``I'') from 0.982 to 0.862 ($\Delta = -0.120$) while random ablation averages 0.984 ($\Delta = +0.002$, within noise).
+For refusal, real ablation reduces mean P(``I'') across 10 harmful prompts from 0.982 to 0.862 ($\Delta = -0.120$) while random ablation averages 0.984 ($\Delta = +0.002$, within noise).
+(Note: these are averages across the full prompt set; per-prompt values in Table~\ref{tab:refusal} show larger shifts for susceptible prompts.)
 
 Benign prompts are 100\% preserved under both conditions.
 
@@ -1130,7 +1123,7 @@ Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren,
 \label{sec:lrp_appendix}
 
 We adopt the three linearization rules from \citet{arora2025circuits} without modification.
-We provide the full mathematical treatment here for completeness.
+We provide the full mathematical treatment here.
 
 \subsection{Rule 1: LN-rule (RMSNorm Linearization)}
 
@@ -1370,12 +1363,10 @@ L1/N2427  & 0   & 38 & Source hub (super weight candidate, 4013$\times$) \\
 
 \subsection{Cross-Model Super Weight Candidates}
 
-\clearpage
-\noindent
+\begin{table}[htbp]
 \centering
-\captionof{table}{Super weight candidates detected across models via edge attribution dominance ratio.}
+\caption{Super weight candidates detected across models via edge attribution dominance ratio.}
 \label{tab:superweights}
-
 \small
 \begin{tabular}{llr}
 \toprule
@@ -1386,6 +1377,7 @@ Qwen2.5-7B   & L2/N10406 & 4807$\times$ \\
 Qwen2.5-7B   & L26/N5891 & 5702$\times$ \\
 \bottomrule
 \end{tabular}
+\end{table}
 
 
 \end{document}
