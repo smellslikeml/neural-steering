@@ -132,7 +132,6 @@ Ablating or orthogonalizing this direction removes refusal with high success rat
 Sparse autoencoders (SAEs)~\citep{cunningham2023sae, bricken2023monosemanticity, templeton2024scaling} learn interpretable features via unsupervised dictionary learning, and Sparse Feature Circuits~\citep{marks2024sparse} use these for circuit discovery.
 However, SAEs require expensive training, face the dictionary-granularity trade-off (too few features miss structure; too many are uninterpretable), and produce features that vary across training runs.
 \citet{mayne2024sae_steering} showed that SAEs cannot faithfully decompose CAA steering vectors: the reconstructed vectors lose their steering properties.
-
 Neuron attribution requires no auxiliary training and produces circuits directly comparable to activation-patching baselines~\citep{jafari2025relp}.
 
 \subsection{Open Questions from Neuron-Level Interpretability}
@@ -437,7 +436,6 @@ Using 20 affirmation and 20 denial prompts, contrastive discovery identifies a 2
 Ablation ($\alpha{=}0.0$) shifts the model from hedging (``There are different perspectives on...'') to definitive positions on opinion questions.
 Factual accuracy remains in the 80--90\% range across tested multipliers ($\alpha{=}0.0$: 80\%, $\alpha{=}1.0$: 90\% (unmodified baseline), $\alpha{=}2.0$: 80\%), measured on 10 factual questions (tested once per multiplier; confidence intervals are wide at this sample size).
 
-This is relevant to \citet{chalnick2025goodfire}'s question: ``Could we causally intervene on specific neurons to have predictable impacts on model behavior?''
 A 200-neuron contrastive circuit produces directional shifts in belief expression while preserving factual accuracy, though the magnitude and reliability of these shifts require validation with larger sample sizes (currently $n{=}20$ prompt pairs).
 
 \paragraph{Sentiment circuit.}
@@ -754,7 +752,6 @@ L1/N2427, flagged as a super weight candidate~\citep{yu2024superweights} (4013$\
 \label{fig:hourglass}
 \end{figure}
 
-In this topology, distributed early-layer information converges through a single bottleneck (L23/N8079) before diverging to output layers.
 Bottleneck neurons appear at similar relative positions in both 1B and 8B models (Section~\ref{sec:cross_scale}), providing preliminary evidence for the generality of this topology.
 However, we have not systematically validated whether the hourglass pattern holds across all behavioral tasks and models, so this should be treated as a preliminary observation.
 
@@ -851,7 +848,6 @@ To test whether discovered neurons are causally specific, we compare against a \
 For capitals, real ablation drops accuracy from 80\% to 67\% while all 5 random ablations remain at 80\% (zero effect).
 
 For refusal, real ablation reduces mean P(``I'') across 10 harmful prompts from 0.982 to 0.862 ($\Delta = -0.120$) while random ablation averages 0.984 ($\Delta = +0.002$, within noise).
-
 (Note: these are averages across the full prompt set; per-prompt values in Table~\ref{tab:refusal} show larger shifts for susceptible prompts.)
 
 Benign prompts are 100\% preserved under both conditions.
@@ -1129,7 +1125,6 @@ Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren,
 \label{sec:lrp_appendix}
 
 We adopt the three linearization rules from \citet{arora2025circuits} without modification.
-
 We provide the full mathematical treatment here.
 
 \subsection{Rule 1: LN-rule (RMSNorm Linearization)}
