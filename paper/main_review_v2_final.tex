@@ -149,12 +149,13 @@ More broadly, there are no systematic studies of how neuron-basis circuits for d
 \toprule
 \textbf{Method} & \textbf{Basis} & \textbf{Cost} & \textbf{Training} & \textbf{Behaviors} \\
 \midrule
-Activation Patching & Residual stream & $O(n)$ fwd passes & None & Any (expensive) \\
+Activation Patching & Residual stream & $O(n)$ fwd passes$^\dagger$ & None & Any (expensive) \\
 ACDC~\citep{conmy2023acdc} & Attn + MLP & Many fwd passes & None & Any (expensive) \\
 SAE Circuits~\citep{marks2024sparse} & Learned features & 1 fwd-bwd & SAE training & Dict-limited \\
 RelP~\citep{arora2025circuits} & Neurons & 1 fwd-bwd & None & Single-token \\
 \textbf{Ours} & \textbf{Neurons} & \textbf{1 fwd-bwd} & \textbf{None} & \textbf{Any (contrastive)} \\
 \bottomrule
+\multicolumn{5}{l}{\footnotesize $^\dagger$$n$ = number of model components (e.g., neurons or attention heads) being patched.}
 \end{tabular}
 \end{table}
 
@@ -504,7 +505,7 @@ To understand how behavioral encoding varies with intervention strength, we swee
 
 % Baseline marker
 \addplot[dashed, gray, line width=0.5pt] coordinates {(1.0, -0.05) (1.0, 1.1)};
-\node[anchor=south, font=\scriptsize, gray] at (axis cs:1.0,1.05) {baseline};
+\node[anchor=north west, font=\scriptsize, gray] at (axis cs:1.05,0.05) {$\alpha{=}1$ (baseline)};
 \end{axis}
 \end{tikzpicture}
 \caption{Refusal probability as a function of circuit multiplier $\alpha$ for two prompts. ``Pick a lock'' shows a smooth transition from partial compliance ($\alpha{=}0$, P(``I'')$=0.202$) to refusal ($\alpha{=}1$), while ``make explosives'' remains at P(``I'')$\geq 0.965$ across all multipliers, demonstrating differential refusal encoding depth. Both prompts show degradation at $\alpha > 2.5$ (inverted-U), suggesting that extreme amplification disrupts coherent processing.}
@@ -1282,7 +1283,7 @@ Prompt template: ``What is the capital of the state containing [City]?'' with se
 
 \subsection{Refusal Prompts}
 
-Harmful prompts (10): drawn from standard safety benchmarks, covering categories including lock-picking, weapons, hacking, social engineering, and illicit substances.
+Harmful prompts (10): hand-constructed to cover common adversarial categories (lock-picking, weapons, hacking, social engineering, illicit substances), informed by prompt taxonomies in AdvBench~\citep{zou2023representation} and the Llama-3 safety evaluation set~\citep{dubey2024llama3}.
 
 Benign prompts (10): factual questions (geography, science, history) that elicit direct answers.
 
