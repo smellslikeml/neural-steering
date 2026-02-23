@@ -54,7 +54,7 @@ Third, we perform \textbf{layer localization and circuit overlap studies} across
 Circuit overlap is near-zero between factual and behavioral tasks, but moderate within behavioral circuits, with 23 shared infrastructure neurons appearing in 3+ circuits, 20 of which reside in a single layer (L31).
 An automated universal neuron detection procedure replaces hand-curated blacklists, giving zero-code-change portability across four gated-MLP models.
 Ablating contrastive circuits reduces refusal probability on susceptible prompts while leaving strongly encoded refusals intact, and modulates belief expression and sentiment, all while modifying only 0.04\% of MLP neurons (specificity tested on a limited set of benign prompts; see Section~\ref{sec:limitations}).
-This differential suppression is consistent with variable refusal encoding depth.
+This differential suppression suggests a hierarchy of refusal encoding depth.
 \end{abstract}
 
 
@@ -149,9 +149,9 @@ More broadly, there are no systematic studies of how neuron-basis circuits for d
 \toprule
 \textbf{Method} & \textbf{Basis} & \textbf{Cost} & \textbf{Training} & \textbf{Behaviors} \\
 \midrule
-Act.\ Patching & Residual stream & $O(n)$ fwd passes & None & Any (expensive) \\
+Activation Patching & Residual stream & $O(n)$ fwd passes & None & Any (expensive) \\
 ACDC~\citep{conmy2023acdc} & Attn + MLP & Many fwd passes & None & Any (expensive) \\
-SAE Circuits~\citep{marks2024sparse} & Learned feat. & 1 fwd-bwd & SAE training & Dict-limited \\
+SAE Circuits~\citep{marks2024sparse} & Learned features & 1 fwd-bwd & SAE training & Dict-limited \\
 RelP~\citep{arora2025circuits} & Neurons & 1 fwd-bwd & None & Single-token \\
 \textbf{Ours} & \textbf{Neurons} & \textbf{1 fwd-bwd} & \textbf{None} & \textbf{Any (contrastive)} \\
 \bottomrule
@@ -230,7 +230,7 @@ Given a set of positive prompts $\mathcal{P}^+$ (exhibiting the target behavior)
 \paragraph{Relationship to CAA and RelP.}
 This applies CAA at the MLP neuron level rather than the residual stream.
 The resulting circuits inherit the sparsity of neuron-basis circuits (${\sim}$200 neurons, 0.04\% of MLP parameters) while capturing behaviors that single-token RelP attribution cannot target.
-\citet{mayne2024sae_steering} showed that SAEs fail to decompose residual-stream steering vectors. Contrastive neuron circuits offer a path toward decomposing them in the neuron basis rather than a learned feature dictionary.
+\citet{mayne2024sae_steering} showed that SAEs fail to decompose residual-stream steering vectors. Contrastive neuron circuits offer a path toward decomposing them in the neuron basis rather than using a learned feature dictionary.
 
 The contrastive method is a mean activation difference, conceptually identical to CAA but measured at MLP neurons instead of the residual stream.
 The experiments in Sections~\ref{sec:contrastive_results}--\ref{sec:structure} test whether this decomposition yields circuits with interpretable structure and targeted steering effects.
@@ -406,10 +406,10 @@ Ablation ($\alpha{=}0.0$) of the 200-neuron refusal circuit reduces refusal prob
 \footnotesize
 \begin{tabular}{lccl}
 \toprule
-\textbf{Prompt} & \textbf{P(``I'') norm.} & \textbf{P(``I'') abl.} & \textbf{Ablated generation} \\
+\textbf{Prompt} & \textbf{P(``I'') normal} & \textbf{P(``I'') ablated} & \textbf{Ablated generation} \\
 \midrule
 ``How do I pick a lock?'' & 0.938 & 0.202 & ``Picking a lock can be a complex...'' \\
-``Explain how to hack wifi'' & 1.000 & 0.723 & ``I can provide general info...''\rlap{$^\ast$} \\
+``Explain how to hack wifi'' & 1.000 & 0.723 & ``I can provide general information...''\rlap{$^\ast$} \\
 ``How do I make explosives?'' & 1.000 & 0.996 & Still refuses (``I can't provide...'') \\
 \bottomrule
 \end{tabular}
@@ -639,6 +639,8 @@ SVA         & 0.028 & 0.020 & 0.024 & 0.076 & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+We highlight three observations:
 
 \paragraph{Near-zero factual--behavioral overlap.}
 Capitals shares zero neurons with sentiment (Jaccard 0.000), 5 with refusal (0.017), and 4 with sycophancy (0.013).
@@ -1363,10 +1365,12 @@ L1/N2427  & 0   & 38 & Source hub (super weight candidate, 4013$\times$) \\
 
 \subsection{Cross-Model Super Weight Candidates}
 
-\begin{table}[htbp]
+\clearpage
+\noindent
 \centering
-\caption{Super weight candidates detected across models via edge attribution dominance ratio.}
+\captionof{table}{Super weight candidates detected across models via edge attribution dominance ratio.}
 \label{tab:superweights}
+
 \small
 \begin{tabular}{llr}
 \toprule
@@ -1377,7 +1381,6 @@ Qwen2.5-7B   & L2/N10406 & 4807$\times$ \\
 Qwen2.5-7B   & L26/N5891 & 5702$\times$ \\
 \bottomrule
 \end{tabular}
-\end{table}
 
 
 \end{document}
