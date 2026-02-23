@@ -505,7 +505,7 @@ To understand how behavioral encoding varies with intervention strength, we swee
 
 % Baseline marker
 \addplot[dashed, gray, line width=0.5pt] coordinates {(1.0, -0.05) (1.0, 1.1)};
-\node[anchor=north west, font=\scriptsize, gray] at (axis cs:1.05,0.05) {$\alpha{=}1$ (baseline)};
+\node[anchor=south, font=\scriptsize, gray] at (axis cs:1.0,1.05) {baseline};
 \end{axis}
 \end{tikzpicture}
 \caption{Refusal probability as a function of circuit multiplier $\alpha$ for two prompts. ``Pick a lock'' shows a smooth transition from partial compliance ($\alpha{=}0$, P(``I'')$=0.202$) to refusal ($\alpha{=}1$), while ``make explosives'' remains at P(``I'')$\geq 0.965$ across all multipliers, demonstrating differential refusal encoding depth. Both prompts show degradation at $\alpha > 2.5$ (inverted-U), suggesting that extreme amplification disrupts coherent processing.}
