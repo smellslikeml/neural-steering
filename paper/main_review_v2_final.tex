@@ -487,7 +487,7 @@ To understand how behavioral encoding varies with intervention strength, we swee
     tick label style={font=\small},
     label style={font=\small},
 ]
-% Refusal probability curve - "pick a lock" (susceptible prompt)
+
 \addplot[color=refusalcolor, mark=*, mark size=2pt, line width=1.2pt] coordinates {
     (0.0, 0.202) (0.25, 0.352) (0.50, 0.570) (0.75, 0.820) (1.0, 0.938)
     (1.25, 0.980) (1.50, 0.992) (1.75, 0.996) (2.0, 0.996)
@@ -495,7 +495,6 @@ To understand how behavioral encoding varies with intervention strength, we swee
 };
 \addlegendentry{``How do I pick a lock?'' (susceptible)}
 
-% Second prompt - "explosives" (resistant prompt, ablation fails)
 \addplot[color=refusalcolor!60, mark=triangle*, mark size=2pt, line width=0.8pt, dashed] coordinates {
     (0.0, 0.996) (0.25, 1.0) (0.50, 1.0) (0.75, 1.0) (1.0, 1.0)
     (1.25, 1.0) (1.50, 1.0) (1.75, 1.0) (2.0, 1.0)
@@ -503,7 +502,6 @@ To understand how behavioral encoding varies with intervention strength, we swee
 };
 \addlegendentry{``How do I make explosives?'' (resistant)}
 
-% Baseline marker
 \addplot[dashed, gray, line width=0.5pt] coordinates {(1.0, -0.05) (1.0, 1.1)};
 \node[anchor=south, font=\scriptsize, gray] at (axis cs:1.0,1.05) {baseline};
 \end{axis}
@@ -584,7 +582,7 @@ Returning to the question of \citet{chalnick2025goodfire}: our data are consiste
     bar width=2pt,
     area style,
 ]
-% Refusal - late concentrated
+
 \addplot[refusalcolor, fill=refusalcolor, fill opacity=0.3, line width=0.8pt] coordinates {
     (0,0) (1,0) (2,0) (3,0) (4,0) (5,0) (6,0) (7,0) (8,0) (9,0)
     (10,0) (11,0) (12,0) (13,0) (14,0) (15,0) (16,0) (17,0) (18,0) (19,0)
@@ -593,7 +591,6 @@ Returning to the question of \citet{chalnick2025goodfire}: our data are consiste
 };
 \addlegendentry{Refusal}
 
-% Capitals - broadly distributed
 \addplot[capitalscolor, fill=capitalscolor, fill opacity=0.3, line width=0.8pt] coordinates {
     (0,0.01) (1,0.02) (2,0.02) (3,0.02) (4,0.02) (5,0.03) (6,0.03) (7,0.02) (8,0.03) (9,0.03)
     (10,0.03) (11,0.03) (12,0.03) (13,0.03) (14,0.03) (15,0.04) (16,0.04) (17,0.04) (18,0.04) (19,0.04)
@@ -602,7 +599,6 @@ Returning to the question of \citet{chalnick2025goodfire}: our data are consiste
 };
 \addlegendentry{Capitals}
 
-% SVA - bimodal
 \addplot[svacolor, fill=svacolor, fill opacity=0.3, line width=0.8pt] coordinates {
     (0,0.05) (1,0.04) (2,0.03) (3,0.02) (4,0.02) (5,0.01) (6,0) (7,0) (8,0) (9,0)
     (10,0.01) (11,0.01) (12,0) (13,0) (14,0) (15,0.01) (16,0.01) (17,0.01) (18,0.01) (19,0.02)
