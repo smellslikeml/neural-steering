@@ -2,7 +2,8 @@
 
 Commands: prompt, discover, ablate, amplify, sweep, edges, top, save, load, info, quit
 """
-from neuron_steer.core import NeuronSteerer
+import torch
+from neuron_steer import NeuronSteerer
 
-steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")
+steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct", dtype=torch.bfloat16)
 steerer.interactive()
