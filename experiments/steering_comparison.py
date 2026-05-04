@@ -11,7 +11,6 @@ CAA:  Adds alpha * control_vector to MLP output at each layer via hooks on down_
 
 Usage:
     cd neural-steering
-    source neuralvenv/bin/activate
     python experiments/steering_comparison.py --model Qwen/Qwen2.5-3B-Instruct
     python experiments/steering_comparison.py --model meta-llama/Llama-3.2-1B-Instruct
 """
