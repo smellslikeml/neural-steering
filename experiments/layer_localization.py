@@ -7,7 +7,6 @@ then computes layer distribution statistics.
 
 Usage:
     cd neural-steering
-    source neuralvenv/bin/activate
     python experiments/layer_localization.py --model meta-llama/Llama-3.2-1B-Instruct --output-dir experiments/results
     python experiments/layer_localization.py --model meta-llama/Llama-3.1-8B-Instruct --output-dir experiments/results
 """
