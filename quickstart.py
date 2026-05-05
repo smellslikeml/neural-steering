@@ -6,7 +6,7 @@ from neuron_steer import NeuronSteerer
 steerer = NeuronSteerer("meta-llama/Llama-3.1-8B-Instruct")
 
 # ------------------------------------------------------------------
-# Mode 1: Contrastive discovery (paper's primary contribution)
+# Mode 1: Contrastive discovery
 # Positive = prompts exhibiting the behavior; Negative = prompts that don't.
 # ------------------------------------------------------------------
 refusal_circuit = steerer.find_feature(

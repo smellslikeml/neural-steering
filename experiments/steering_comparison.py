@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Steering Comparison: RelP (sparse) vs CAA (dense)
+Steering Comparison: CNA (sparse) vs CAA (dense)
 ==================================================
-Alpha sweep [-1, 1] comparing sparse neuron steering (RelP) with dense
+Alpha sweep [-1, 1] comparing contrastive neuron attribution (CNA) with dense
 MLP control vector steering (CAA). Same contrastive pairs, same classifier
 head (refusal detection), same 99 eval prompts.
 
-RelP: Multiplies specific neuron activations by (1 + alpha) via pre-hooks on down_proj.
+CNA: Multiplies specific neuron activations by (1 + alpha) via pre-hooks on down_proj.
 CAA:  Adds alpha * control_vector to MLP output at each layer via hooks on down_proj.
 
 Usage:

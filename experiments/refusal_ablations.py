@@ -5,7 +5,7 @@ Three focused ablation experiments:
   2. Sparsity sweep -- how many neurons do you need?
   3. Layer locality -- late-layer location vs random neurons of equal count
 
-Run: CUDA_VISIBLE_DEVICES=0 python -u experiments/refusal_ablations.py --model meta-llama/Llama-3.1-8B-Instruct > experiments/results/refusal_ablations_8b.log 2>&1
+Run: python -u experiments/refusal_ablations.py --model meta-llama/Llama-3.1-8B-Instruct > experiments/results/refusal_ablations_8b.log 2>&1
 """
 
 import argparse

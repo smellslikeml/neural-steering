@@ -1,7 +1,7 @@
 """
 neuron_steer.py - Neuron Circuit Discovery and Steering for Language Models
 
-LRP rules for linearized backward attribution (matching TransluceAI's code):
+LRP rules for linearized backward attribution:
   1. LN-rule: RMSNorm coefficient (weight * rsqrt) detached but preserved in backward
   2. AH-rule: Eager attention (no SDPA/Flash) for full autograd through Q/K/V/O
   3. Half-rule: Shapley attribution for gate*up elementwise multiply in MLP
@@ -44,7 +44,7 @@ class CircuitEdge(NamedTuple):
 
 # ============================================================
 # Universal Neuron Blacklists
-# Hard-coded from TransluceAI circuits repo (jvp.py) for Llama-3-8B.
+# Hard-coded from TransluceAI circuits repo (jvp.py) for Llama-3.1-8B.
 # These fire universally across tasks, not task-specific.
 # Format: (layer, neuron) - position-independent.
 # ============================================================
@@ -537,17 +537,13 @@ class CircuitGraph:
 # ============================================================
 
 class LinearizedRMSNorm(nn.Module):
-    """Wraps RMSNorm with LN-rule (TransluceAI's StraightThroughLlamaRMSNorm).
+    """Wraps RMSNorm with LN-rule.
 
     Forward = real RMSNorm value.
     Backward = grad * (weight * rsqrt(mean(x²) + eps)), where the coefficient
     is DETACHED (treated as constant, but its per-token value is preserved).
 
-    This matches TransluceAI's approach: coeff = weight * rsqrt(mean(x²) + eps),
-    detached, then y = x * coeff. Since coeff is detached, backward = grad * coeff.
-
-    NOTE: The paper says "identity through normalization" but TransluceAI's code
-    preserves the per-token scaling coefficient. We match their code.
+    coeff = weight * rsqrt(mean(x²) + eps), detached, then y = x * coeff. Since coeff is detached, backward = grad * coeff.
     """
     def __init__(self, original):
         super().__init__()
@@ -564,7 +560,6 @@ class LinearizedRMSNorm(nn.Module):
     def forward(self, x):
         # Compute normalization coefficient: weight * rsqrt(mean(x²) + eps)
         # DETACH it so backward treats it as constant (LN-rule)
-        # Cast to float32 for numerical stability (matches TransluceAI)
         input_dtype = x.dtype
         variance = x.float().pow(2).mean(-1, keepdim=True)
         coeff = self.weight.float() * torch.rsqrt(variance + self.eps)
@@ -593,10 +588,8 @@ class _HalfRuleMultiply(torch.autograd.Function):
 class LinearizedMLP(nn.Module):
     """Wraps LlamaMLP with detached sigmoid + half-rule.
 
-    Matches TransluceAI's RelPGradMLP mode (grad.py:384-406), NOT their default
-    StopGradGateMLP which fully detaches the gate activation.  Our approach is
-    more principled: only the sigmoid is detached while the linear component of
-    SiLU (x * sigmoid(x)) keeps gradient flow, then the half-rule distributes
+    only the sigmoid is detached while the linear component of SiLU 
+    (x * sigmoid(x)) keeps gradient flow, then the half-rule distributes
     credit evenly between gate and up projections.
 
     Standard Llama MLP:
@@ -654,8 +647,7 @@ def _linearize_model(model):
     """
     originals = {"modules": {}, "hooks": []}
 
-    # Rule 2: Force eager attention (save original implementation)
-    # TransluceAI replaces Flash/SDPA with explicit matmul+softmax ops.
+    # Rule 2: Force eager attention
     # This ensures gradient flows through all attention paths including Q/K.
     originals["attn_impl"] = model.config._attn_implementation
     model.config._attn_implementation = "eager"
@@ -674,7 +666,6 @@ def _linearize_model(model):
         layer.post_attention_layernorm = LinearizedRMSNorm(layer.post_attention_layernorm)
 
         # Rule 2: AH-rule — replace SDPA/Flash with eager attention
-        # TransluceAI's NoQKGradAttention just ensures explicit matmul+softmax ops
         # (not fused SDPA/Flash) for autograd compatibility. Gradient DOES flow
         # through Q/K — the class name is misleading. We match their behavior.
 
@@ -744,7 +735,7 @@ def compute_attribution(
         last_n_positions: If set, only keep neurons from the last N token positions.
         blacklist_layers: Set of layer indices to exclude entirely
         blacklist_neurons: Set of (layer, neuron) tuples to exclude
-        target_only: If True, backward from target logit alone (TransluceAI's approach).
+        target_only: If True, backward from target logit alone.
             If False and no counterfactual given, auto-detects 2nd highest logit.
             Use target_only=True for percentage_threshold selection.
         verbose: Print diagnostic info about attribution distribution
@@ -882,7 +873,7 @@ def select_circuit(
     Methods:
         'threshold': Select neurons until cumulative |attribution| >= threshold * total
         'topk': Select top-k neurons by |attribution| (globally)
-        'percentage': TransluceAI's approach. Keep neurons with INDIVIDUAL
+        'percentage': Keep neurons with INDIVIDUAL
             |attribution| >= threshold * |reference_value|.
             When percentage_threshold=0.005, keeps neurons contributing >= 0.5%
             of the logit diff. This filters noise while preserving all significant neurons.
@@ -1072,7 +1063,6 @@ class NeuronSteerer:
         self._feature_cache: Dict[str, Circuit] = {}
 
         # Universal neuron blacklist (model-conditional)
-        # TransluceAI's blacklist is specifically for Llama-3.1-8B
         is_llama_8b = "llama" in model_name.lower() and ("8b" in model_name.lower() or "8B" in model_name)
         if is_llama_8b:
             self.blacklist: Set[Tuple[int, int]] = set(BLACKLIST_LLAMA3_8B)
@@ -1178,9 +1168,9 @@ class NeuronSteerer:
 
         Selection methods:
             top_k=N: Select exactly N neurons by |attribution|
-            selection_method='percentage': TransluceAI's approach - keep neurons with
+            selection_method='percentage': keep neurons with
                 |attribution| >= threshold * |logit_diff|. Default threshold=0.005.
-            Default: cumulative threshold (deprecated, use percentage for paper repro)
+            Default: cumulative threshold
 
         Args:
             prompt: Input text (auto-formatted for instruct models)
@@ -1188,7 +1178,7 @@ class NeuronSteerer:
             counterfactual_token: Alternative token (auto if None)
             threshold: Attribution threshold (meaning depends on selection_method)
             top_k: Select exactly top_k neurons (overrides threshold)
-            selection_method: 'percentage' for TransluceAI-style individual neuron threshold
+            selection_method: 'percentage' for individual neuron threshold
             seed_response: Text to append before target (e.g., "Answer:")
             filter_bos: Filter out BOS position neurons
             filter_infrastructure: Filter out L0-L1, or pass set of layer indices
@@ -1276,18 +1266,14 @@ class NeuronSteerer:
     ) -> "Circuit | Tuple[Circuit, Dict, float]":
         """Discover circuit over multiple prompts.
 
-        This is the proper approach from the paper - find task-general neurons
-        across many prompts (not prompt-specific).
-
-        batch_aggregation modes (from TransluceAI circuits code):
+        batch_aggregation modes:
             'mean': Average attributions across all prompts (default)
             'any': Keep neuron if it's important in ANY prompt (union)
-                   This is what TransluceAI uses - preserves prompt-specific neurons
+                   Preserves prompt-specific neurons
 
-        selection_method='percentage' + threshold=0.005 matches TransluceAI's
-        percentage_threshold=0.005: keep neurons with |attr| >= 0.5% of |reference_value|.
+        selection_method='percentage' + threshold=0.005: keep neurons with |attr| >= 0.5% of |reference_value|.
         When no counterfactual tokens given, auto-enables target_only (backprop from target
-        logit alone, not logit_diff) — matching TransluceAI's exact methodology.
+        logit alone, not logit_diff)
 
         precomputed_attributions: (aggregated_dict, avg_ld) from a prior call with
             return_raw_attributions=True. Skips all LRP computation — only does selection.
@@ -1324,7 +1310,7 @@ class NeuronSteerer:
         # Use target_only when doing percentage selection or explicitly requested
         use_target_only = target_only if target_only is not None else (selection_method == "percentage")
 
-        # For percentage + "any": apply threshold PER PROMPT (TransluceAI's approach)
+        # For percentage + "any": apply threshold PER PROMPT
         # Each prompt gets its own threshold = percentage * that_prompt's_target_logit
         # Then union across prompts
         per_prompt_filter = (selection_method == "percentage" and batch_aggregation == "any")
@@ -2125,7 +2111,7 @@ class NeuronSteerer:
         use_chat_template: bool = True,
         percentage_thresholds: Optional[List[float]] = None,
     ) -> List[Dict[str, float]]:
-        """Batch faithfulness evaluation matching TransluceAI's exact approach.
+        """Batch faithfulness evaluation
 
         Key differences from measure_faithfulness (per-prompt):
         - All prompts processed as one left-padded batch
@@ -2133,7 +2119,6 @@ class NeuronSteerer:
         - Metric averaged across batch (single scalar per threshold)
         - Sweeps percentage thresholds over attributed neurons
 
-        TransluceAI's algorithm (base.py: run_with_ablations):
         1. Forward PATCH inputs -> capture MLP activations -> mean(dim=0) per layer
         2. For each threshold, run 4 forward passes of CLEAN inputs:
            F(M) = full model, F(empty) = all replaced, F(C) = complement replaced,
@@ -2143,7 +2128,7 @@ class NeuronSteerer:
         5. completeness = (fccomp - fempty) / (fm - fempty)
 
         IMPORTANT: Pass `attributions` (full raw attributions from discover_circuit_multi
-        with return_raw_attributions=True) for TransluceAI-faithful evaluation. This
+        with return_raw_attributions=True) for evaluation. This
         sweeps percentage thresholds over ALL non-zero attributed neurons, so 100%
         means keeping all attributed neurons (fc ≈ fm). If only `circuit` is passed,
         thresholds sweep within the filtered circuit (100% = only circuit neurons).
@@ -2156,7 +2141,7 @@ class NeuronSteerer:
             attributions: Full raw attributions Dict[NeuronIdx, float] for sweeping
             patch_prompts: Counterfactual prompts for paired mode. None = nopair.
             seed_response: Seed for chat template (e.g., "Answer:")
-            ablation_type: "mean" (TransluceAI default) or "zero"
+            ablation_type: "mean" or "zero"
             use_chat_template: Apply chat template
             percentage_thresholds: Circuit size percentages to sweep
 
@@ -2222,7 +2207,6 @@ class NeuronSteerer:
         )
 
         # --- Compute patch_states: mean of patch activations over batch ---
-        # TransluceAI: ablation_fn(x, "mean") = x.mean(dim=0).expand_as(x)
         # We store the mean (seq_len, intermediate_size) per layer
         patch_states: Dict[int, torch.Tensor] = {}
 
@@ -2243,8 +2227,8 @@ class NeuronSteerer:
             for h in hooks:
                 h.remove()
 
-        # --- Collapse to unique (layer, neuron) -> max abs attribution ---
-        # Use full attributions if provided (TransluceAI-style: sweep over ALL neurons)
+        # Collapse to unique (layer, neuron) -> max abs attribution
+        # Use full attributions if provided
         # Otherwise fall back to circuit neurons (sweep within circuit only)
         source_data = attributions if attributions is not None else circuit.neurons
         neuron_attrs: Dict[Tuple[int, int], float] = {}
@@ -2260,7 +2244,7 @@ class NeuronSteerer:
         print(f"  Batch faithfulness: {len(prompts)} prompts, {total_circuit} unique neurons "
               f"({total_circuit/total_model:.1%} of model), ablation={ablation_type}, mode={mode}")
 
-        # --- Helper: forward pass clean batch with hooks, return mean logit diff ---
+        # Helper: forward pass clean batch with hooks, return mean logit diff
         def run_metric(hook_factory):
             """hook_factory(layer_idx) -> hook_fn or None"""
             hooks = []
@@ -2281,11 +2265,11 @@ class NeuronSteerer:
                 for h in hooks:
                     h.remove()
 
-        # --- F(M): full model (no hooks) ---
+        # F(M): full model (no hooks) 
         fm = run_metric(lambda li: None)
         print(f"  F(M) = {fm:.4f}")
 
-        # --- F(empty): all neurons replaced ---
+        # F(empty): all neurons replaced
         if use_zero:
             def empty_factory(li):
                 def hook_fn(module, args):
@@ -2304,7 +2288,7 @@ class NeuronSteerer:
         denom = fm - fempty
         print(f"  denom = fm - fempty = {denom:.4f}")
 
-        # --- Sweep percentage thresholds ---
+        # Sweep percentage thresholds
         data = []
         for pct in percentage_thresholds:
             n_include = int((pct / 100.0) * total_circuit)
@@ -2412,26 +2396,16 @@ class NeuronSteerer:
         ablation_type: str = "mean",
         mean_acts: Optional[Dict[int, torch.Tensor]] = None,
     ) -> Dict[str, float]:
-        """Measure circuit faithfulness and completeness (paper Section 3.3).
+        """Measure circuit faithfulness and completeness
 
         ablation_type:
             'mean': replace ablated neurons with mean activation.
-                    Default — matches TransluceAI's auc_test_ablation_type="mean".
+                    Default — auc_test_ablation_type="mean".
             'zero': zero out ablated neurons (multiplier=0.0). More aggressive.
 
         mean_acts: Pre-computed mean activations from compute_mean_activations().
             Pass this to use task-relevant means (computed from training prompts).
             If None with ablation_type='mean', computes from 20 diverse prompts.
-
-        TransluceAI's formulas:
-            faithfulness = (fc - fempty) / (fm - fempty)
-            completeness = (fc_comp - fempty) / (fm - fempty)
-
-        Where:
-            fm = full model metric
-            fc = metric with only circuit active (complement ablated)
-            fc_comp = metric with circuit ablated (complement active)
-            fempty = metric with ALL neurons ablated
         """
         if use_chat_template:
             formatted = self._format_prompt(prompt, seed_response)
@@ -2445,7 +2419,7 @@ class NeuronSteerer:
             cf_id = self.tokenizer.encode(counterfactual_token, add_special_tokens=False)[-1]
 
         def get_metric(input_ids, target_id, cf_id):
-            """Logit difference metric (matches TransluceAI's logit_difference_metric_fn)."""
+            """Logit difference metric"""
             with torch.no_grad():
                 logits = self.model(input_ids).logits[0, -1]
                 target_logit = logits[target_id].item()
@@ -3186,7 +3160,6 @@ def demo_capitals(steerer: NeuronSteerer):
     """
     print("=" * 70)
     print("EXPERIMENT 1: CAPITALS (single prompt, top-200)")
-    print("Paper reference: Section 4, Figure 5")
     print("=" * 70)
 
     prompt = "What is the capital of the state containing Dallas?"
@@ -3196,8 +3169,8 @@ def demo_capitals(steerer: NeuronSteerer):
     print(f"\nPrompt: {prompt}")
     print(f"Normal output: {normal}")
 
-    # Discover circuit with top_k=200 (paper uses ~200 neurons)
-    # Using "Answer:" seed like the paper
+    # Discover circuit with top_k=200 
+    # Using "Answer:" seed 
     print("\nDiscovering circuit (top-200 neurons, filter BOS, verbose)...")
     circuit = steerer.discover_circuit(
         prompt, " Austin",
@@ -3208,7 +3181,7 @@ def demo_capitals(steerer: NeuronSteerer):
     )
     print(circuit.summary())
 
-    # Top neurons - paper finds task-specific neurons in L15-L25 range
+    # Top neurons
     print(f"\nTop 20 neurons (expecting deep-layer task-specific neurons):")
     for nidx, attr in circuit.top(20):
         print(f"  L{nidx.layer:2d} / pos {nidx.position:2d} / N{nidx.neuron:5d}  attr={attr:+.8f}")
@@ -3239,16 +3212,15 @@ def demo_capitals(steerer: NeuronSteerer):
 
 
 def demo_multi_prompt_capitals(steerer: NeuronSteerer):
-    """Multi-prompt circuit discovery (paper's actual approach).
+    """Multi-prompt circuit discovery
 
-    The paper averages attributions over 50 prompts.
     This finds task-general neurons, not prompt-specific ones.
     """
     print("\n" + "=" * 70)
-    print("EXPERIMENT 2: MULTI-PROMPT CAPITALS (paper's methodology)")
+    print("EXPERIMENT 2: MULTI-PROMPT CAPITALS")
     print("=" * 70)
 
-    # Subset of the paper's 50 state capital prompts
+    # Subset of the 50 state capital prompts
     city_state_capital = [
         ("Dallas", "Texas", "Austin"),
         ("Los Angeles", "California", "Sacramento"),
@@ -3304,23 +3276,17 @@ def demo_multi_prompt_capitals(steerer: NeuronSteerer):
 def demo_sva(steerer: NeuronSteerer):
     """SVA (subject-verb agreement) circuit discovery.
 
-    Paper Section 3: ~100-200 neurons sufficient for faithful SVA circuits.
-    Uses TransluceAI's SVA datasets: simple, nounpp, rc, within_rc.
-    SVA is a raw completion task (no chat template).
-
     Dataset format (JSONL):
         clean_prefix: "The friends"           -> clean_answer: " have"
         patch_prefix: "The friend"            -> patch_answer: " has"
     """
     print("\n" + "=" * 70)
-    print("EXPERIMENT 3: SUBJECT-VERB AGREEMENT (TransluceAI reproduction)")
-    print("Paper reference: Section 3, Figures 2-4")
+    print("EXPERIMENT 3: SUBJECT-VERB AGREEMENT")
     print("=" * 70)
 
     import json
     import os
 
-    # Try loading TransluceAI's actual datasets
     data_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..",
                             "sandbox", "circuits", "data", "feature_circuits")
     datasets = {}
@@ -3336,7 +3302,7 @@ def demo_sva(steerer: NeuronSteerer):
 
     # Fallback prompts if datasets not found
     if not datasets:
-        print("  Using built-in SVA prompts (TransluceAI datasets not found)")
+        print("  Using built-in SVA prompts")
         datasets = {
             "builtin": [
                 {"clean_prefix": "The key to the cabinets", "clean_answer": " is", "patch_answer": " are", "case": "singular"},
@@ -3364,7 +3330,7 @@ def demo_sva(steerer: NeuronSteerer):
         cfs = [item["patch_answer"] for item in circuit_items]
 
         print(f"\nDiscovering circuit over {n_circuit} prompts...")
-        print(f"  Selection: percentage_threshold=0.005 (TransluceAI's approach)")
+        print(f"  Selection: percentage_threshold=0.005")
         print(f"  Aggregation: any (union)")
 
         circuit = steerer.discover_circuit_multi(
@@ -3658,7 +3624,6 @@ def demo_refusal(steerer: NeuronSteerer):
 def demo_faithfulness(steerer: NeuronSteerer):
     """Measure faithfulness and completeness of discovered circuits.
 
-    This is the key metric from the paper (Section 3.3):
     - Faithfulness: Does the circuit alone reproduce the behavior?
     - Completeness: Does ablating the circuit change the behavior?
 
@@ -3666,7 +3631,6 @@ def demo_faithfulness(steerer: NeuronSteerer):
     """
     print("\n" + "=" * 70)
     print("EXPERIMENT: FAITHFULNESS MEASUREMENT")
-    print("Paper reference: Section 3.3, Figure 4")
     print("=" * 70)
 
     test_cases = [
@@ -3677,7 +3641,7 @@ def demo_faithfulness(steerer: NeuronSteerer):
         ("What is the capital of the state containing Seattle?", " Olympia", " Washington", "Answer:"),
     ]
 
-    # Test faithfulness at different circuit sizes (paper plots faithfulness vs k)
+    # Test faithfulness at different circuit sizes
     for k_size in [20, 50, 100, 200]:
         print(f"\n--- Circuit size: top-{k_size} neurons ---")
         total_f, total_c = 0.0, 0.0
@@ -3712,9 +3676,8 @@ def demo_faithfulness(steerer: NeuronSteerer):
 
 
 def demo_addition(steerer: NeuronSteerer):
-    """Addition circuit discovery (paper Section 4.2).
+    """Addition circuit discovery
 
-    The paper finds neurons encoding:
     - Ones digit computation
     - Tens digit computation
     - Carry operations
@@ -3724,7 +3687,6 @@ def demo_addition(steerer: NeuronSteerer):
     """
     print("\n" + "=" * 70)
     print("EXPERIMENT: ADDITION (two-digit arithmetic)")
-    print("Paper reference: Section 4.2")
     print("=" * 70)
 
     # CRITICAL: Llama-3 tokenizer splits " 7" -> [" ", "7"] (TWO tokens!).
@@ -3834,21 +3796,17 @@ def demo_addition(steerer: NeuronSteerer):
 
 
 def demo_50_prompt_capitals(steerer: NeuronSteerer):
-    """50-prompt capitals experiment - exact TransluceAI reproduction.
+    """50-prompt capitals experiment
 
-    Uses TransluceAI's exact 50-state dataset from capitals.py.
-    Key parameters matching paper:
         - percentage_threshold=0.005 (not topk)
         - apply_blacklist=True
         - batch_aggregation="any"
         - seed_response="Answer:"
     """
     print("\n" + "=" * 70)
-    print("EXPERIMENT: 50-PROMPT CAPITALS (TransluceAI reproduction)")
-    print("Paper reference: Section 4, Figure 5")
+    print("EXPERIMENT: 50-PROMPT CAPITALS")
     print("=" * 70)
 
-    # TransluceAI's exact 50-state dataset (from capitals.py)
     city_state_capital = [
         ("Dallas", "Texas", "Austin"),
         ("Birmingham", "Alabama", "Montgomery"),
@@ -3905,8 +3863,7 @@ def demo_50_prompt_capitals(steerer: NeuronSteerer):
     prompts = [f"What is the capital of the state containing {city}?" for city, _, _ in city_state_capital]
     targets = [f" {capital}" for _, _, capital in city_state_capital]
 
-    # ============ APPROACH 1: TransluceAI's exact method ============
-    print(f"\n--- Approach 1: TransluceAI's exact method ---")
+    print(f"\n--- Approach 1: TransluceAI's exact method (reproduction) ---")
     print(f"  percentage_threshold=0.005, batch_aggregation='any', apply_blacklist=True")
 
     circuit_pct = steerer.discover_circuit_multi(
@@ -3931,7 +3888,7 @@ def demo_50_prompt_capitals(steerer: NeuronSteerer):
         print(f"  L{nidx.layer:2d}/pos{nidx.position:2d}/N{nidx.neuron:5d} = {attr:+.8f}")
 
     # ============ APPROACH 2: top-200 for comparison ============
-    print(f"\n--- Approach 2: top-200 (our previous approach) ---")
+    print(f"\n--- Approach 2: top-200 ---")
     circuit_topk = steerer.discover_circuit_multi(
         prompts, targets,
         top_k=200,
@@ -4071,8 +4028,6 @@ def demo_super_weights(steerer):
 
     Super weights are neurons with enormous activations that produce
     near-identical edge weights to ALL downstream circuit targets.
-    This connects the super weights paper (arxiv 2411.07191) to
-    neuron circuits (arxiv 2601.22594) via a novel edge attribution analysis.
     """
     print("\n" + "=" * 70)
     print("EXPERIMENT: SUPER WEIGHT DETECTION VIA EDGE ATTRIBUTION")
@@ -4390,13 +4345,13 @@ TASKS = {
     "all": "Run all experiments",
     "diagnostics": "LRP rule verification",
     "capitals": "Single-prompt capitals circuit",
-    "multi": "Multi-prompt capitals (paper methodology)",
+    "multi": "Multi-prompt capitals",
     "sva": "Subject-verb agreement circuits",
     "refusal": "Refusal circuit discovery and steering",
     "knowledge": "Knowledge editing via neuron steering",
     "faithfulness": "Faithfulness and completeness measurement",
     "addition": "Arithmetic circuit discovery (two-digit addition)",
-    "capitals50": "50-prompt capitals (paper scale reproduction)",
+    "capitals50": "50-prompt capitals",
     "super_weights": "Detect super weights via edge attribution uniformity",
     "caa": "CAA control vector to neuron circuit connection",
 }
