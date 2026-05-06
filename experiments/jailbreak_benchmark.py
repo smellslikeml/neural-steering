@@ -4,7 +4,7 @@ circuit identified by contrastive neuron attribution (CNA).
 
 Uses JBB-Behaviors (100 harmful prompts) as the evaluation set.
 
-Run: python -u experiments/jailbreak_benchmark.py --model meta-llama/Llama-3.1-8B-Instruct > experiments/results/jailbreak_benchmark.log 2>&1
+Run: CUDA_VISIBLE_DEVICES=0 python -u experiments/jailbreak_benchmark.py --model meta-llama/Llama-3.1-8B-Instruct > experiments/results/jailbreak_benchmark.log 2>&1
 """
 
 import argparse

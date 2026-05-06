@@ -2,17 +2,16 @@
 """
 Steering Comparison: CNA (sparse) vs CAA (dense)
 ==================================================
-Alpha sweep [-1, 1] comparing contrastive neuron attribution (CNA) with dense
-MLP control vector steering (CAA). Same contrastive pairs, same classifier
+Alpha sweep [-1, 1] comparing contrastive neuron attribution (CNA) with 
+control vector steering (CAA). Same contrastive pairs, same classifier
 head (refusal detection), same 99 eval prompts.
 
 CNA: Multiplies specific neuron activations by (1 + alpha) via pre-hooks on down_proj.
 CAA:  Adds alpha * control_vector to MLP output at each layer via hooks on down_proj.
 
 Usage:
-    cd neural-steering
-    python experiments/steering_comparison.py --model Qwen/Qwen2.5-3B-Instruct
-    python experiments/steering_comparison.py --model meta-llama/Llama-3.2-1B-Instruct
+    CUDA_VISIBLE_DEVICES=0 python experiments/steering_comparison.py --model Qwen/Qwen2.5-3B-Instruct
+    CUDA_VISIBLE_DEVICES=0 python experiments/steering_comparison.py --model meta-llama/Llama-3.2-1B-Instruct
 """
 
 import argparse
@@ -144,10 +143,10 @@ def detect_refusal(text):
 
 @contextmanager
 def steer_caa(model, control_vectors, alpha):
-    """Apply CAA steering: add alpha * control_vector to MLP output at each layer.
+    """Apply CAA steering: add alpha * control_vector to output at each layer.
 
-    control_vectors: Dict[layer_idx, Tensor[d_model]] from compute_mlp_control_vector
-    alpha: scaling factor (matches the alpha in RelP steering)
+    control_vectors: Dict[layer_idx, Tensor[d_model]]
+    alpha: scaling factor
     """
     hooks = []
     for layer_idx, cv in control_vectors.items():
@@ -221,7 +220,7 @@ def run_comparison(model_name: str, output_dir: str, top_k: int = 1600):
 
     # ---- Compute CAA control vector ----
     print(f"\n{'='*60}")
-    print("Computing MLP CAA control vector...")
+    print("Computing CAA control vector...")
     print(f"{'='*60}")
     caa_vectors = steerer.compute_mlp_control_vector(
         positive_prompts=CIRCUIT_POSITIVE,
@@ -255,7 +254,7 @@ def run_comparison(model_name: str, output_dir: str, top_k: int = 1600):
     results["baseline"] = {"n_refusals": baseline_refusals, "pct": round(baseline_pct, 1)}
 
     # ---- Alpha sweep for each method ----
-    for method_name, method_label in [("cna", "CNA (sparse neuron)"), ("caa", "CAA (dense MLP)")]:
+    for method_name, method_label in [("cna", "CNA"), ("caa", "CAA"]:
         print(f"\n{'='*60}")
         print(f"Alpha sweep: {method_label}")
         print(f"{'='*60}")
@@ -350,7 +349,7 @@ def run_comparison(model_name: str, output_dir: str, top_k: int = 1600):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="RelP vs CAA steering comparison")
+    parser = argparse.ArgumentParser(description="CNA vs CAA steering comparison")
     parser.add_argument("--model", default="Qwen/Qwen2.5-3B-Instruct",
                         help="HuggingFace model name")
     parser.add_argument("--output-dir", default="experiments/results",
